@@ -1,6 +1,5 @@
 import { state, subscribe } from './state.js';
 import { getUnavailableFonts } from './fonts.js';
-import { PPTX_SLIDE_HEIGHT_PT } from './constants.js';
 import { renderSlide } from './renderer.js';
 
 // DOM elements
