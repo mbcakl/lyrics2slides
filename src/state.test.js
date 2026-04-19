@@ -1,11 +1,31 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
+// Mock BroadcastChannel
+const mockPostMessage = vi.fn();
+let mockOnMessage;
+
+class MockBroadcastChannel {
+  constructor(name) {
+    this.name = name;
+  }
+  postMessage = mockPostMessage;
+  set onmessage(cb) {
+    mockOnMessage = cb;
+  }
+  get onmessage() {
+    return mockOnMessage;
+  }
+}
+
+vi.stubGlobal('BroadcastChannel', MockBroadcastChannel);
+
 // Reset module state between tests
 let stateModule;
 
 describe('state module', () => {
   beforeEach(async () => {
     vi.resetModules();
+    mockPostMessage.mockClear();
     stateModule = await import('./state.js');
   });
 
@@ -18,6 +38,10 @@ describe('state module', () => {
 
       expect(stateModule.state.primaryLyrics).toBe('Test lyrics');
       expect(listener).toHaveBeenCalledTimes(1);
+      expect(mockPostMessage).toHaveBeenCalledWith({
+        type: 'SYNC_STATE',
+        state: stateModule.state
+      });
     });
   });
 
@@ -30,6 +54,10 @@ describe('state module', () => {
 
       expect(stateModule.state.secondaryLyrics).toBe('Secondary text');
       expect(listener).toHaveBeenCalledTimes(1);
+      expect(mockPostMessage).toHaveBeenCalledWith({
+        type: 'SYNC_STATE',
+        state: stateModule.state
+      });
     });
   });
 
@@ -41,6 +69,10 @@ describe('state module', () => {
 
       expect(stateModule.state.slides).toHaveLength(2);
       expect(stateModule.state.currentSlide).toBe(1); // Clamped to max index
+      expect(mockPostMessage).toHaveBeenCalledWith({
+        type: 'SYNC_STATE',
+        state: stateModule.state
+      });
     });
 
     it('sets currentSlide to 0 for empty slides', () => {
@@ -54,11 +86,16 @@ describe('state module', () => {
     beforeEach(() => {
       stateModule.setSlides([{ id: 1 }, { id: 2 }, { id: 3 }]);
       stateModule.setCurrentSlide(1);
+      mockPostMessage.mockClear(); // Clear message from setSlides/setCurrentSlide
     });
 
     it('nextSlide increments within bounds', () => {
       stateModule.nextSlide();
       expect(stateModule.state.currentSlide).toBe(2);
+      expect(mockPostMessage).toHaveBeenCalledWith({
+        type: 'SYNC_STATE',
+        state: stateModule.state
+      });
     });
 
     it('nextSlide does not exceed max', () => {
@@ -70,12 +107,42 @@ describe('state module', () => {
     it('prevSlide decrements within bounds', () => {
       stateModule.prevSlide();
       expect(stateModule.state.currentSlide).toBe(0);
+      expect(mockPostMessage).toHaveBeenCalledWith({
+        type: 'SYNC_STATE',
+        state: stateModule.state
+      });
     });
 
     it('prevSlide does not go below 0', () => {
       stateModule.setCurrentSlide(0);
       stateModule.prevSlide();
       expect(stateModule.state.currentSlide).toBe(0);
+    });
+  });
+
+  describe('broadcast synchronization', () => {
+    beforeEach(() => {
+      stateModule.setSlides([{ id: 1 }, { id: 2 }, { id: 3 }]);
+      stateModule.setCurrentSlide(1);
+      mockPostMessage.mockClear();
+    });
+
+    it('responds to REQUEST_STATE', () => {
+      mockOnMessage({ data: { type: 'REQUEST_STATE' } });
+      expect(mockPostMessage).toHaveBeenCalledWith({
+        type: 'SYNC_STATE',
+        state: stateModule.state
+      });
+    });
+
+    it('responds to PREV_SLIDE', () => {
+      mockOnMessage({ data: { type: 'PREV_SLIDE' } });
+      expect(stateModule.state.currentSlide).toBe(0);
+    });
+
+    it('responds to NEXT_SLIDE', () => {
+      mockOnMessage({ data: { type: 'NEXT_SLIDE' } });
+      expect(stateModule.state.currentSlide).toBe(2);
     });
   });
 
@@ -86,6 +153,10 @@ describe('state module', () => {
 
       stateModule.notify();
       expect(listener).toHaveBeenCalledTimes(1);
+      expect(mockPostMessage).toHaveBeenCalledWith({
+        type: 'SYNC_STATE',
+        state: stateModule.state
+      });
 
       unsubscribe();
       stateModule.notify();

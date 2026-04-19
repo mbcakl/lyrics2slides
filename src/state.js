@@ -19,6 +19,7 @@ export const state = {
 
 // Listeners for state changes
 const listeners = new Set();
+const syncChannel = new BroadcastChannel('lyrics2slides_sync');
 
 export function subscribe(listener) {
   listeners.add(listener);
@@ -27,7 +28,19 @@ export function subscribe(listener) {
 
 export function notify() {
   listeners.forEach(listener => listener(state));
+  syncChannel.postMessage({ type: 'SYNC_STATE', state });
 }
+
+// Handle requests for initial state and navigation from other windows
+syncChannel.onmessage = (event) => {
+  if (event.data.type === 'REQUEST_STATE') {
+    syncChannel.postMessage({ type: 'SYNC_STATE', state });
+  } else if (event.data.type === 'PREV_SLIDE') {
+    prevSlide();
+  } else if (event.data.type === 'NEXT_SLIDE') {
+    nextSlide();
+  }
+};
 
 export function setPrimaryLyrics(lyrics) {
   state.primaryLyrics = lyrics;
