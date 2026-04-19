@@ -248,6 +248,8 @@ body {
   text-align: center;
   line-height: 1.3;
   white-space: pre-line;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 /* Bottom section: 52% to 95% of slide height, text aligned to top */
@@ -263,6 +265,8 @@ body {
   text-align: center;
   line-height: 1.4;
   white-space: pre-line;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 /* Centered text when only one language is present */

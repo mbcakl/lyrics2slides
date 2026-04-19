@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Presentation - Lyrics2Slides</title>
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    body { margin: 0; background: black; overflow: hidden; cursor: none; }
+    .presentation-container { width: 100vw; height: 100vh; display: flex; align-items: center; justify-content: center; }
+    .slide-preview { 
+      border: none; 
+      box-shadow: none; 
+      border-radius: 0;
+      width: min(100vw, calc(100vh * 16 / 9));
+      height: min(100vh, calc(100vw * 9 / 16));
+    }
+  </style>
+</head>
+<body>
+  <div class="presentation-container">
+    <div id="slide-preview" class="slide-preview">
+      <div class="slide-content">
+        <div class="primary-text"></div>
+        <div class="secondary-text"></div>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/present.js"></script>
+</body>
+</html>
