@@ -1,6 +1,7 @@
 import { state, subscribe } from './state.js';
 import { getUnavailableFonts } from './fonts.js';
 import { PPTX_SLIDE_HEIGHT_PT } from './constants.js';
+import { renderSlide } from './renderer.js';
 
 // DOM elements
 let slidePreview;
@@ -36,16 +37,6 @@ export function initPreview() {
   renderPreview(state);
 }
 
-/**
- * Calculate the font scale factor based on preview size vs actual PPTX slide size.
- * This ensures the preview accurately represents how text will appear in the exported PPTX.
- */
-function getFontScale() {
-  const previewHeight = slidePreview.clientHeight;
-  // Scale factor: preview pixels / PPTX points
-  return previewHeight / PPTX_SLIDE_HEIGHT_PT;
-}
-
 async function checkFonts(settings) {
   const fontKey = `${settings.fontFamilyPrimary}|${settings.fontFamilySecondary}`;
   if (fontKey === lastCheckedFonts) return;
@@ -69,72 +60,14 @@ function renderPreview(state) {
   // Update background
   slidePreview.style.backgroundColor = settings.backgroundColor;
 
-  // Handle empty state
-  if (slides.length === 0) {
-    primaryText.textContent = '';
-    secondaryText.textContent = '';
-    slideCounter.textContent = '0 / 0';
-    slidePreview.classList.add('empty');
-    primaryText.classList.remove('centered');
-    secondaryText.classList.remove('centered');
-    return;
-  }
-
-  slidePreview.classList.remove('empty');
-
-  const slide = slides[currentSlide];
-  if (!slide) return;
-
-  // Calculate font scale based on preview size
-  const fontScale = getFontScale();
-
-  const primarySettings = {
-    font: settings.fontFamilyPrimary,
-    size: settings.fontSizePrimary,
-    bold: settings.fontBoldPrimary,
-    color: settings.fontColorPrimary
-  };
-
-  const secondarySettings = {
-    font: settings.fontFamilySecondary,
-    size: settings.fontSizeSecondary,
-    bold: settings.fontBoldSecondary,
-    color: settings.fontColorSecondary
-  };
-
-  // Check if only primary has content (secondary should be empty if primary is empty)
-  const hasPrimary = slide.primary.length > 0;
-  const hasSecondary = slide.secondary.length > 0;
-  const onlyPrimary = hasPrimary && !hasSecondary;
-
-  // Reset centering classes
-  primaryText.classList.remove('centered');
-  secondaryText.classList.remove('centered');
-
-  if (onlyPrimary) {
-    // Only primary - center it
-    primaryText.classList.add('centered');
-    primaryText.textContent = slide.primary.join('\n');
-    primaryText.style.fontFamily = primarySettings.font;
-    primaryText.style.fontSize = `${primarySettings.size * fontScale}px`;
-    primaryText.style.fontWeight = primarySettings.bold ? 'bold' : 'normal';
-    primaryText.style.color = primarySettings.color;
-    secondaryText.textContent = '';
-  } else {
-    // Both languages - use normal split layout
-    primaryText.textContent = slide.primary.join('\n');
-    primaryText.style.fontFamily = primarySettings.font;
-    primaryText.style.fontSize = `${primarySettings.size * fontScale}px`;
-    primaryText.style.fontWeight = primarySettings.bold ? 'bold' : 'normal';
-    primaryText.style.color = primarySettings.color;
-
-    secondaryText.textContent = slide.secondary.join('\n');
-    secondaryText.style.fontFamily = secondarySettings.font;
-    secondaryText.style.fontSize = `${secondarySettings.size * fontScale}px`;
-    secondaryText.style.fontWeight = secondarySettings.bold ? 'bold' : 'normal';
-    secondaryText.style.color = secondarySettings.color;
-  }
+  // Render slide content using the shared renderer
+  const slide = slides.length > 0 ? slides[currentSlide] : null;
+  renderSlide(slidePreview, slide, settings);
 
   // Update counter
-  slideCounter.textContent = `${currentSlide + 1} / ${slides.length}`;
+  if (slides.length === 0) {
+    slideCounter.textContent = '0 / 0';
+  } else {
+    slideCounter.textContent = `${currentSlide + 1} / ${slides.length}`;
+  }
 }
