@@ -2,6 +2,9 @@
 export const state = {
   primaryLyrics: '',
   secondaryLyrics: '',
+  mode: 'lyrics',
+  biblePrimaryText: '',
+  bibleSecondaryText: '',
   slides: [],
   currentSlide: 0,
   settings: {
@@ -13,7 +16,17 @@ export const state = {
     fontFamilySecondary: 'Calibri',
     fontSizeSecondary: 40,
     fontBoldSecondary: true,
-    fontColorSecondary: '#ffff00'
+    fontColorSecondary: '#ffff00',
+    // Bible-specific settings
+    bibleBackgroundColor: '#000000',
+    bibleFontFamilyPrimary: 'Kaiti SC',
+    bibleFontSizePrimary: 64,
+    bibleFontBoldPrimary: true,
+    bibleFontColorPrimary: '#ffff00',
+    bibleFontFamilySecondary: 'Calibri',
+    bibleFontSizeSecondary: 40,
+    bibleFontBoldSecondary: true,
+    bibleFontColorSecondary: '#ffff00'
   }
 };
 
@@ -49,6 +62,21 @@ export function setPrimaryLyrics(lyrics) {
 
 export function setSecondaryLyrics(lyrics) {
   state.secondaryLyrics = lyrics;
+  notify();
+}
+
+export function setMode(mode) {
+  state.mode = mode;
+  notify();
+}
+
+export function setBiblePrimaryText(text) {
+  state.biblePrimaryText = text;
+  notify();
+}
+
+export function setBibleSecondaryText(text) {
+  state.bibleSecondaryText = text;
   notify();
 }
 

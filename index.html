@@ -23,35 +23,98 @@
     <main class="main">
       <!-- Left: Lyrics Input -->
       <section class="input-section">
-        <!-- Primary -->
-        <div class="textarea-group">
-          <label for="primary-lyrics">Primary</label>
-          <textarea
-            id="primary-lyrics"
-            placeholder="Paste lyrics here...&#10;&#10;Separate slides with blank lines"
-          ></textarea>
-          <div class="font-settings">
-            <input type="text" id="font-primary" list="font-suggestions" value="Kaiti SC" placeholder="Font name" aria-label="Primary font family">
-            <input type="number" id="size-primary" min="8" max="200" value="64" aria-label="Primary font size">
-            <span class="size-unit">pt</span>
-            <input type="color" id="color-primary" value="#ffff00" aria-label="Primary font color">
-            <label class="bold-label"><input type="checkbox" id="bold-primary" checked aria-label="Primary bold">B</label>
+        <div class="tabs">
+          <button id="tab-lyrics" class="tab-btn active">Lyrics</button>
+          <button id="tab-bible" class="tab-btn">Bible</button>
+        </div>
+
+        <div id="lyrics-container">
+          <!-- Primary -->
+          <div class="textarea-group">
+            <label for="primary-lyrics">Primary</label>
+            <textarea
+              id="primary-lyrics"
+              placeholder="Paste lyrics here...&#10;&#10;Separate slides with blank lines"
+            ></textarea>
+            <div class="font-settings">
+              <input type="text" id="font-primary" list="font-suggestions" value="Kaiti SC" placeholder="Font name" aria-label="Primary font family">
+              <input type="number" id="size-primary" min="8" max="200" value="64" aria-label="Primary font size">
+              <span class="size-unit">pt</span>
+              <input type="color" id="color-primary" value="#ffff00" aria-label="Primary font color">
+              <label class="bold-label"><input type="checkbox" id="bold-primary" checked aria-label="Primary bold">B</label>
+            </div>
+          </div>
+
+          <!-- Secondary -->
+          <div class="textarea-group" id="secondary-group">
+            <label for="secondary-lyrics">Secondary</label>
+            <textarea
+              id="secondary-lyrics"
+              placeholder="Paste lyrics here...&#10;&#10;Separate slides with blank lines"
+            ></textarea>
+            <div class="font-settings" id="secondary-font-group">
+              <input type="text" id="font-secondary" list="font-suggestions" value="Calibri" placeholder="Font name" aria-label="Secondary font family">
+              <input type="number" id="size-secondary" min="8" max="200" value="40" aria-label="Secondary font size">
+              <span class="size-unit">pt</span>
+              <input type="color" id="color-secondary" value="#ffff00" aria-label="Secondary font color">
+              <label class="bold-label"><input type="checkbox" id="bold-secondary" checked aria-label="Secondary bold">B</label>
+            </div>
           </div>
         </div>
 
-        <!-- Secondary -->
-        <div class="textarea-group" id="secondary-group">
-          <label for="secondary-lyrics">Secondary</label>
-          <textarea
-            id="secondary-lyrics"
-            placeholder="Paste lyrics here...&#10;&#10;Separate slides with blank lines"
-          ></textarea>
-          <div class="font-settings" id="secondary-font-group">
-            <input type="text" id="font-secondary" list="font-suggestions" value="Calibri" placeholder="Font name" aria-label="Secondary font family">
-            <input type="number" id="size-secondary" min="8" max="200" value="40" aria-label="Secondary font size">
-            <span class="size-unit">pt</span>
-            <input type="color" id="color-secondary" value="#ffff00" aria-label="Secondary font color">
-            <label class="bold-label"><input type="checkbox" id="bold-secondary" checked aria-label="Secondary bold">B</label>
+        <div id="bible-container" style="display: none;">
+          <div class="textarea-group" style="margin-bottom: 1rem;">
+            <label for="bible-reference">Bible Reference</label>
+            <input type="text" id="bible-reference" placeholder="e.g., John 3:16" class="text-input">
+          </div>
+          
+          <div class="textarea-group" style="margin-bottom: 1rem;">
+            <label for="bible-translation-primary">Primary Translation</label>
+            <select id="bible-translation-primary" class="text-input">
+              <option value="NIV">NIV (New International Version)</option>
+              <option value="CUNPSS-神">CUNPSS (The Chinese Union Version)</option>
+            </select>
+          </div>
+
+          <div class="textarea-group" style="margin-bottom: 1rem;">
+            <label style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-primary);">
+              <input type="checkbox" id="bible-secondary-enable"> Enable Secondary Translation
+            </label>
+            <select id="bible-translation-secondary" class="text-input" disabled>
+              <option value="CUNPSS-神">CUNPSS (The Chinese Union Version)</option>
+              <option value="NIV">NIV (New International Version)</option>
+            </select>
+          </div>
+
+          <button id="fetch-bible-btn" class="btn-primary" style="margin-bottom: 1rem; width: 100%;">Fetch Verses</button>
+
+          <div class="header-controls" style="margin-bottom: 1rem; justify-content: flex-start;">
+            <label for="bible-bg-color">Bible Background</label>
+            <input type="color" id="bible-bg-color" value="#000000">
+          </div>
+
+          <div class="textarea-group">
+            <label for="bible-primary-text">Primary Verses (Editable)</label>
+            <textarea id="bible-primary-text" placeholder="Fetched verses will appear here..."></textarea>
+            <div class="font-settings" id="bible-primary-font-group">
+              <input type="text" id="bible-font-primary" list="font-suggestions" value="Kaiti SC" placeholder="Font name">
+              <input type="number" id="bible-size-primary" min="8" max="200" value="64">
+              <span class="size-unit">pt</span>
+              <input type="color" id="bible-color-primary" value="#ffff00">
+              <label class="bold-label"><input type="checkbox" id="bible-bold-primary" checked>B</label>
+            </div>
+          </div>
+
+          <div class="textarea-group" id="bible-secondary-group" style="opacity: 0.4; pointer-events: none; margin-top: 1rem;">
+            <label for="bible-secondary-text">Secondary Verses (Editable)</label>
+            <textarea id="bible-secondary-text" placeholder="Fetched verses will appear here..." disabled></textarea>
+            <div class="font-settings" id="bible-secondary-font-group">
+              <input type="text" id="bible-font-secondary" list="font-suggestions" value="Calibri" placeholder="Font name">
+              <input type="number" id="bible-size-secondary" min="8" max="200" value="40">
+              <span class="size-unit">pt</span>
+              <input type="color" id="bible-color-secondary" value="#ffff00">
+              <label class="bold-label"><input type="checkbox" id="bible-bold-secondary" checked>B</label>
+            </div>
           </div>
         </div>
       </section>

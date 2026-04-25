@@ -68,4 +68,56 @@ export function initControls() {
   boldSecondary.addEventListener('change', (e) => {
     updateSettings({ fontBoldSecondary: e.target.checked });
   });
+
+  // Bible Settings
+  const bibleBgColor = document.getElementById('bible-bg-color');
+  bibleBgColor.addEventListener('input', (e) => {
+    updateSettings({ bibleBackgroundColor: e.target.value });
+  });
+
+  // Bible Primary Font
+  const bibleFontPrimary = document.getElementById('bible-font-primary');
+  const bibleSizePrimary = document.getElementById('bible-size-primary');
+  const bibleColorPrimary = document.getElementById('bible-color-primary');
+  const bibleBoldPrimary = document.getElementById('bible-bold-primary');
+
+  bibleFontPrimary.addEventListener('input', (e) => {
+    updateSettings({ bibleFontFamilyPrimary: e.target.value });
+  });
+
+  bibleSizePrimary.addEventListener('input', (e) => {
+    const size = clampFontSize(e.target.value);
+    updateSettings({ bibleFontSizePrimary: size });
+  });
+
+  bibleColorPrimary.addEventListener('input', (e) => {
+    updateSettings({ bibleFontColorPrimary: e.target.value });
+  });
+
+  bibleBoldPrimary.addEventListener('change', (e) => {
+    updateSettings({ bibleFontBoldPrimary: e.target.checked });
+  });
+
+  // Bible Secondary Font
+  const bibleFontSecondary = document.getElementById('bible-font-secondary');
+  const bibleSizeSecondary = document.getElementById('bible-size-secondary');
+  const bibleColorSecondary = document.getElementById('bible-color-secondary');
+  const bibleBoldSecondary = document.getElementById('bible-bold-secondary');
+
+  bibleFontSecondary.addEventListener('input', (e) => {
+    updateSettings({ bibleFontFamilySecondary: e.target.value });
+  });
+
+  bibleSizeSecondary.addEventListener('input', (e) => {
+    const size = clampFontSize(e.target.value);
+    updateSettings({ bibleFontSizeSecondary: size });
+  });
+
+  bibleColorSecondary.addEventListener('input', (e) => {
+    updateSettings({ bibleFontColorSecondary: e.target.value });
+  });
+
+  bibleBoldSecondary.addEventListener('change', (e) => {
+    updateSettings({ bibleFontBoldSecondary: e.target.checked });
+  });
 }

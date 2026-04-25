@@ -18,7 +18,7 @@ async function loadPptxGenJS() {
 }
 
 async function generatePptx() {
-  const { slides, settings } = state;
+  const { slides, settings, mode } = state;
 
   if (slides.length === 0) {
     alert('Please enter some lyrics first.');
@@ -38,17 +38,30 @@ async function generatePptx() {
     pptx.author = 'Lyrics2Slides';
     pptx.title = 'Lyrics Slides';
 
-    // Remove # from hex color for pptxgenjs
-    const bgColor = settings.backgroundColor.replace('#', '');
+    const isBible = mode === 'bible';
 
-    const primarySettings = {
+    // Remove # from hex color for pptxgenjs
+    const bgColor = isBible ? settings.bibleBackgroundColor.replace('#', '') : settings.backgroundColor.replace('#', '');
+    const alignMode = isBible ? 'left' : 'center';
+
+    const primarySettings = isBible ? {
+      font: settings.bibleFontFamilyPrimary,
+      size: settings.bibleFontSizePrimary,
+      bold: settings.bibleFontBoldPrimary,
+      color: settings.bibleFontColorPrimary
+    } : {
       font: settings.fontFamilyPrimary,
       size: settings.fontSizePrimary,
       bold: settings.fontBoldPrimary,
       color: settings.fontColorPrimary
     };
 
-    const secondarySettings = {
+    const secondarySettings = isBible ? {
+      font: settings.bibleFontFamilySecondary,
+      size: settings.bibleFontSizeSecondary,
+      bold: settings.bibleFontBoldSecondary,
+      color: settings.bibleFontColorSecondary
+    } : {
       font: settings.fontFamilySecondary,
       size: settings.fontSizeSecondary,
       bold: settings.fontBoldSecondary,
@@ -74,7 +87,7 @@ async function generatePptx() {
           fontFace: primarySettings.font,
           bold: primarySettings.bold,
           color: primarySettings.color.replace('#', ''),
-          align: 'center',
+          align: alignMode,
           valign: 'middle',
           wrap: true
         });
@@ -90,7 +103,7 @@ async function generatePptx() {
             fontFace: primarySettings.font,
             bold: primarySettings.bold,
             color: primarySettings.color.replace('#', ''),
-            align: 'center',
+            align: alignMode,
             valign: 'bottom',
             wrap: true
           });
@@ -106,7 +119,7 @@ async function generatePptx() {
             fontFace: secondarySettings.font,
             bold: secondarySettings.bold,
             color: secondarySettings.color.replace('#', ''),
-            align: 'center',
+            align: alignMode,
             valign: 'top',
             wrap: true
           });

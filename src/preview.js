@@ -51,17 +51,19 @@ async function checkFonts(settings) {
 }
 
 function renderPreview(state) {
-  const { slides, currentSlide, settings } = state;
+  const { slides, currentSlide, settings, mode } = state;
 
   // Check fonts asynchronously
   checkFonts(settings);
 
+  const isBible = mode === 'bible';
+
   // Update background
-  slidePreview.style.backgroundColor = settings.backgroundColor;
+  slidePreview.style.backgroundColor = isBible ? settings.bibleBackgroundColor : settings.backgroundColor;
 
   // Render slide content using the shared renderer
   const slide = slides.length > 0 ? slides[currentSlide] : null;
-  renderSlide(slidePreview, slide, settings);
+  renderSlide(slidePreview, slide, settings, { mode });
 
   // Update counter
   if (slides.length === 0) {

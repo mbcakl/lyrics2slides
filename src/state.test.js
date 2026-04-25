@@ -163,4 +163,46 @@ describe('state module', () => {
       expect(listener).toHaveBeenCalledTimes(1); // Not called again
     });
   });
+
+  describe('bible state', () => {
+    it('updates mode and notifies', () => {
+      const listener = vi.fn();
+      stateModule.subscribe(listener);
+
+      stateModule.setMode('bible');
+
+      expect(stateModule.state.mode).toBe('bible');
+      expect(listener).toHaveBeenCalledTimes(1);
+    });
+
+    it('updates bible primary text and notifies', () => {
+      const listener = vi.fn();
+      stateModule.subscribe(listener);
+
+      stateModule.setBiblePrimaryText('John 3:16');
+
+      expect(stateModule.state.biblePrimaryText).toBe('John 3:16');
+      expect(listener).toHaveBeenCalledTimes(1);
+    });
+
+    it('updates bible secondary text and notifies', () => {
+      const listener = vi.fn();
+      stateModule.subscribe(listener);
+
+      stateModule.setBibleSecondaryText('CUNPSS text');
+
+      expect(stateModule.state.bibleSecondaryText).toBe('CUNPSS text');
+      expect(listener).toHaveBeenCalledTimes(1);
+    });
+
+    it('updates bible-specific settings', () => {
+      stateModule.updateSettings({
+        bibleBackgroundColor: '#123456',
+        bibleFontFamilyPrimary: 'Arial'
+      });
+
+      expect(stateModule.state.settings.bibleBackgroundColor).toBe('#123456');
+      expect(stateModule.state.settings.bibleFontFamilyPrimary).toBe('Arial');
+    });
+  });
 });
