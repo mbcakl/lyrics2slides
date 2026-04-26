@@ -510,3 +510,84 @@ kbd {
   background-color: var(--bg-secondary);
   color: var(--text-primary);
 }
+
+/* Bible Picker Dialog */
+.picker-dialog {
+  border: none;
+  border-radius: 12px;
+  padding: 1.5rem;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  max-width: 900px;
+  width: 90%;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+}
+
+.picker-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+}
+
+.picker-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.5rem;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.picker-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.book-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.book-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.5rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.book-btn:hover {
+  border-color: var(--accent);
+  background: var(--bg-primary);
+}
+
+.book-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+
+.book-btn .zh { font-weight: bold; font-size: 0.9rem; }
+.book-btn .en { font-size: 0.7rem; color: var(--text-secondary); }
+.book-btn.active .en { color: rgba(255,255,255,0.8); }
+
+/* Section Specific Colors */
+#ot-grid .book-btn:not(.active) { border-left: 3px solid #4a90d9; }
+#nt-grid .book-btn:not(.active) { border-left: 3px solid #4ade80; }
