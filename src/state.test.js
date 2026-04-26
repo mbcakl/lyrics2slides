@@ -204,5 +204,19 @@ describe('state module', () => {
       expect(stateModule.state.settings.bibleBackgroundColor).toBe('#123456');
       expect(stateModule.state.settings.bibleFontFamilyPrimary).toBe('Arial');
     });
+
+    it('has default bibleSelectedBook as GEN', () => {
+      expect(stateModule.state.bibleSelectedBook).toBe('GEN');
+    });
+
+    it('updates bibleSelectedBook and notifies', () => {
+      const listener = vi.fn();
+      stateModule.subscribe(listener);
+
+      stateModule.setBibleSelectedBook('JHN');
+
+      expect(stateModule.state.bibleSelectedBook).toBe('JHN');
+      expect(listener).toHaveBeenCalledTimes(1);
+    });
   });
 });

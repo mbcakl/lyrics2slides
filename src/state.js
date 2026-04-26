@@ -3,6 +3,7 @@ export const state = {
   primaryLyrics: '',
   secondaryLyrics: '',
   mode: 'lyrics',
+  bibleSelectedBook: 'GEN',
   biblePrimaryText: '',
   bibleSecondaryText: '',
   biblePrimaryVerses: [],
@@ -71,6 +72,11 @@ export function setSecondaryLyrics(lyrics) {
 
 export function setMode(mode) {
   state.mode = mode;
+  notify();
+}
+
+export function setBibleSelectedBook(bookCode) {
+  state.bibleSelectedBook = bookCode;
   notify();
 }
 
