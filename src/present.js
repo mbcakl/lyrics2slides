@@ -19,6 +19,13 @@ syncChannel.postMessage({ type: 'REQUEST_STATE' });
 document.addEventListener('keydown', (e) => {
   if (e.key === 'ArrowLeft') syncChannel.postMessage({ type: 'PREV_SLIDE' });
   if (e.key === 'ArrowRight') syncChannel.postMessage({ type: 'NEXT_SLIDE' });
+  if (e.key === 'f') {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+    } else if (document.exitFullscreen) {
+      document.exitFullscreen();
+    }
+  }
 });
 
 window.addEventListener('resize', () => {
