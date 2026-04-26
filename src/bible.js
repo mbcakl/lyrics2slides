@@ -1,5 +1,14 @@
 import initSqlJs from 'sql.js';
-import { state, setMode, setBiblePrimaryText, setBibleSecondaryText, setSlides } from './state.js';
+import { 
+  state, 
+  setMode, 
+  setBiblePrimaryText, 
+  setBibleSecondaryText, 
+  setBiblePrimaryVerses,
+  setBibleSecondaryVerses,
+  setSlides,
+  subscribe
+} from './state.js';
 import { parseLyrics } from './parser.js';
 import { dynamicSplit } from './dynamicSplitter.js';
 
@@ -158,8 +167,27 @@ export async function initBible() {
       setBibleSecondaryText(sText);
     }
 
+    setBiblePrimaryVerses(pVerses);
+    setBibleSecondaryVerses(sVerses);
     setSlides(slides);
   });
+
+  let lastSettings = JSON.stringify(state.settings);
+  subscribe((newState) => {
+    const currentSettings = JSON.stringify(newState.settings);
+    if (newState.mode === 'bible' && newState.biblePrimaryVerses.length > 0 && currentSettings !== lastSettings) {
+      lastSettings = currentSettings;
+      reSplitBible();
+    } else {
+      lastSettings = currentSettings;
+    }
+  });
+}
+
+export function reSplitBible() {
+  if (state.mode !== 'bible' || state.biblePrimaryVerses.length === 0) return;
+  const slides = dynamicSplit(state.biblePrimaryVerses, state.bibleSecondaryVerses, state.settings);
+  setSlides(slides);
 }
 
 function parseReference(refStr) {
@@ -209,16 +237,4 @@ function fetchVerses(ref, version) {
   stmt.free();
   console.log(`Found ${verses.length} verses`);
   return verses;
-}
-
-export function formatVerses(verses) {
-  return verses.map((v, i) => {
-    const text = `${toSuperscript(v.verse)} ${v.text}`;
-    // Every 4 verses use double newline to create a new slide
-    if (i > 0 && i % 4 === 0) {
-      return '\n\n' + text;
-    }
-    // Join verses with space instead of newline
-    return (i === 0 ? '' : ' ') + text;
-  }).join('');
 }

@@ -1,9 +1,18 @@
-import { describe, it, expect } from 'vitest';
-import { toSuperscript, formatVerses } from './bible.js';
-import { parseLyrics } from './parser.js';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { toSuperscript, reSplitBible } from './bible.js';
 import { dynamicSplit } from './dynamicSplitter.js';
+import { state, setMode, setBiblePrimaryVerses, setSlides } from './state.js';
 
 describe('Bible utilities', () => {
+  beforeEach(() => {
+    document.body.innerHTML = `
+      <div id="measure-box">
+        <div class="primary-measure"></div>
+        <div class="secondary-measure"></div>
+      </div>
+    `;
+  });
+
   describe('toSuperscript', () => {
     it('converts numbers to superscript', () => {
       expect(toSuperscript('1')).toBe('¹');
@@ -12,60 +21,53 @@ describe('Bible utilities', () => {
     });
   });
 
-  describe('formatVerses', () => {
-    it('formats a single verse', () => {
-      const verses = [{ verse: 1, text: 'Verse text' }];
-      expect(formatVerses(verses)).toBe('¹ Verse text');
-    });
-
-    it('joins multiple verses with spaces', () => {
-      const verses = [
-        { verse: 1, text: 'Verse 1' },
-        { verse: 2, text: 'Verse 2' }
-      ];
-      expect(formatVerses(verses)).toBe('¹ Verse 1 ² Verse 2');
-    });
-
-    it('adds double newline every 4 verses', () => {
-      const verses = [
-        { verse: 1, text: 'V1' },
-        { verse: 2, text: 'V2' },
-        { verse: 3, text: 'V3' },
-        { verse: 4, text: 'V4' },
-        { verse: 5, text: 'V5' }
-      ];
-      const result = formatVerses(verses);
-      expect(result).toBe('¹ V1 ² V2 ³ V3 ⁴ V4\n\n⁵ V5');
-    });
-
-    it('works with parseLyrics to create grouped slides', () => {
-      const verses = [
-        { verse: 1, text: 'V1' },
-        { verse: 2, text: 'V2' },
-        { verse: 3, text: 'V3' },
-        { verse: 4, text: 'V4' },
-        { verse: 5, text: 'V5' }
-      ];
-      const formatted = formatVerses(verses);
-      const slides = parseLyrics(formatted, '');
+  describe('reSplitBible', () => {
+    it('does nothing if not in bible mode', () => {
+      setMode('lyrics');
+      setBiblePrimaryVerses([{ verse: 1, text: 'V1' }]);
       
-      expect(slides).toHaveLength(2);
-      expect(slides[0].primary).toEqual(['¹ V1 ² V2 ³ V3 ⁴ V4']);
-      expect(slides[1].primary).toEqual(['⁵ V5']);
+      const oldSlides = [...state.slides];
+      reSplitBible();
+      expect(state.slides).toEqual(oldSlides);
+    });
+
+    it('does nothing if no bible verses', () => {
+      setMode('bible');
+      setBiblePrimaryVerses([]);
+      
+      setSlides([{ primary: ['Existing'], secondary: [] }]);
+      reSplitBible();
+      expect(state.slides).toEqual([{ primary: ['Existing'], secondary: [] }]);
+    });
+
+    it('re-splits when in bible mode with verses', () => {
+      setMode('bible');
+      const verses = [{ verse: 1, text: 'V1' }];
+      setBiblePrimaryVerses(verses);
+      
+      // Mock height to be small so it fits in one slide
+      const pMeasure = document.querySelector('.primary-measure');
+      Object.defineProperty(pMeasure, 'clientHeight', { value: 10, configurable: true });
+      
+      reSplitBible();
+      
+      expect(state.slides.length).toBeGreaterThan(0);
+      expect(state.slides[0].primary).toEqual(['¹ V1']);
     });
   });
 });
 
 describe('dynamicSplit', () => {
-  it('splits verses when height exceeds limit', () => {
-    // Mock DOM elements
+  beforeEach(() => {
     document.body.innerHTML = `
       <div id="measure-box">
         <div class="primary-measure"></div>
         <div class="secondary-measure"></div>
       </div>
     `;
-    
+  });
+
+  it('splits verses when height exceeds limit', () => {
     const pMeasure = document.querySelector('.primary-measure');
     const settings = { 
         bibleFontSizePrimary: 40,
@@ -76,12 +78,12 @@ describe('dynamicSplit', () => {
         bibleFontBoldSecondary: false
     };
 
-    // Mock height: 1st call (verse 1) 100px, 2nd call (verse 1+2) 250px (> 232px)
+    // Mock height: 1st call (verse 1) 100px, 2nd call (verse 1+2) 500px (> 466px safety limit)
     let callCount = 0;
     Object.defineProperty(pMeasure, 'clientHeight', {
       get: () => {
         callCount++;
-        return callCount === 1 ? 100 : 250;
+        return callCount === 1 ? 100 : 500;
       },
       configurable: true
     });

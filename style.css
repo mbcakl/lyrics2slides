@@ -238,7 +238,6 @@ body {
   position: relative;
   aspect-ratio: 16 / 9;
   max-height: 100%;
-  overflow: hidden;
 }
 
 .slide-content {

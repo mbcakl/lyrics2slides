@@ -17,9 +17,12 @@ export function dynamicSplit(primaryVerses, secondaryVerses, settings) {
   sMeasure.style.fontSize = `${settings.bibleFontSizeSecondary}px`;
   sMeasure.style.fontWeight = settings.bibleFontBoldSecondary ? 'bold' : 'normal';
 
-  const maxHeight = (PPTX_SLIDE_HEIGHT_PT * LAYOUT.PRIMARY_HEIGHT_PERCENT) / 100; // ~232.2pt
   const hasSecondary = secondaryVerses && secondaryVerses.length > 0;
-
+  
+  // Use 90% height if only primary is present, otherwise 43%
+  const heightPercent = hasSecondary ? LAYOUT.PRIMARY_HEIGHT_PERCENT : LAYOUT.CENTERED_HEIGHT_PERCENT;
+  const maxHeight = (PPTX_SLIDE_HEIGHT_PT * heightPercent) / 100 - 20; // 20pt safety margin
+  
   const slides = [];
   let currentPrimary = [];
   let currentSecondary = [];

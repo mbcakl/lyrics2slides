@@ -5,6 +5,8 @@ export const state = {
   mode: 'lyrics',
   biblePrimaryText: '',
   bibleSecondaryText: '',
+  biblePrimaryVerses: [],
+  bibleSecondaryVerses: [],
   slides: [],
   currentSlide: 0,
   settings: {
@@ -20,7 +22,7 @@ export const state = {
     // Bible-specific settings
     bibleBackgroundColor: '#000000',
     bibleFontFamilyPrimary: 'Kaiti SC',
-    bibleFontSizePrimary: 64,
+    bibleFontSizePrimary: 40,
     bibleFontBoldPrimary: true,
     bibleFontColorPrimary: '#ffff00',
     bibleFontFamilySecondary: 'Calibri',
@@ -77,6 +79,16 @@ export function setBiblePrimaryText(text) {
 
 export function setBibleSecondaryText(text) {
   state.bibleSecondaryText = text;
+  notify();
+}
+
+export function setBiblePrimaryVerses(verses) {
+  state.biblePrimaryVerses = verses;
+  notify();
+}
+
+export function setBibleSecondaryVerses(verses) {
+  state.bibleSecondaryVerses = verses;
   notify();
 }
 
