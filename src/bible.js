@@ -129,10 +129,10 @@ export function toSuperscript(numStr) {
 export async function initBible() {
   try {
     const SQL = await initSqlJs({
-      locateFile: file => `/${file}`
+      locateFile: file => `./${file}`
     });
 
-    const response = await fetch('/bible.db');
+    const response = await fetch('./bible.db');
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     const buffer = await response.arrayBuffer();
     db = new SQL.Database(new Uint8Array(buffer));

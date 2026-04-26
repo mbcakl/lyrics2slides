@@ -8,7 +8,7 @@ export function initNavigation() {
   prevBtn.addEventListener('click', prevSlide);
   nextBtn.addEventListener('click', nextSlide);
   presentBtn.addEventListener('click', () => {
-    window.open('/present.html', 'lyrics2slides_present', 'width=1280,height=720');
+    window.open('./present.html', 'lyrics2slides_present', 'width=1280,height=720');
   });
 
   // Keyboard navigation
