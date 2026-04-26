@@ -235,9 +235,15 @@ export async function initBible() {
     }
 
     const bookNames = bookNamesMap[ref.book];
-    const range = ref.startVerse === ref.endVerse ? ref.startVerse : `${ref.startVerse}-${ref.endVerse}`;
-    const pRef = `${bookNames.zh} ${ref.chapter}:${range}`;
-    const sRef = `${bookNames.en} ${ref.chapter}:${range}`;
+    let range = '';
+    if (ref.chapter) {
+      range = ` ${ref.chapter}`;
+      if (ref.startVerse) {
+        range += `:${ref.startVerse}${ref.endVerse !== ref.startVerse ? '-' + ref.endVerse : ''}`;
+      }
+    }
+    const pRef = `${bookNames.zh}${range}`;
+    const sRef = `${bookNames.en}${range}`;
 
     // Replace old slide generation with dynamicSplit
     const settings = state.settings;
@@ -285,30 +291,47 @@ export function reSplitBible() {
   setSlides(slides);
 }
 
-function parseReference(bookCode, cvStr) {
-  // Simple parser for "Chapter:Verse" or "Chapter:Start-End"
-  const regex = /^(\d+):(\d+)(?:-(\d+))?$/;
-  const match = cvStr.match(regex);
+export function parseReference(bookCode, cvStr) {
+  if (!cvStr || !cvStr.trim()) {
+    return { book: bookCode }; // Whole book
+  }
+
+  // Handle "Chapter" or "Chapter:Verse" or "Chapter:Start-End"
+  const regex = /^(\d+)(?::(\d+)(?:-(\d+))?)?$/;
+  const match = cvStr.trim().match(regex);
   if (!match) return null;
+
+  const chapter = parseInt(match[1]);
+  const startVerse = match[2] ? parseInt(match[2]) : null;
+  const endVerse = match[3] ? parseInt(match[3]) : startVerse;
 
   return {
     book: bookCode,
-    chapter: parseInt(match[1]),
-    startVerse: parseInt(match[2]),
-    endVerse: match[3] ? parseInt(match[3]) : parseInt(match[2])
+    chapter,
+    startVerse,
+    endVerse
   };
 }
 
 function fetchVerses(ref, version) {
   console.log('Fetching verses:', ref, version);
-  const stmt = db.prepare('SELECT text, verse FROM verses WHERE book = :book AND chapter = :chapter AND verse >= :start AND verse <= :end AND version = :version ORDER BY verse ASC');
-  stmt.bind({
-    ':book': ref.book,
-    ':chapter': ref.chapter,
-    ':start': ref.startVerse,
-    ':end': ref.endVerse,
-    ':version': version
-  });
+  
+  let sql = 'SELECT text, verse, chapter FROM verses WHERE book = :book AND version = :version';
+  const params = { ':book': ref.book, ':version': version };
+
+  if (ref.chapter) {
+    sql += ' AND chapter = :chapter';
+    params[':chapter'] = ref.chapter;
+  }
+  if (ref.startVerse) {
+    sql += ' AND verse >= :start AND verse <= :end';
+    params[':start'] = ref.startVerse;
+    params[':end'] = ref.endVerse;
+  }
+  sql += ' ORDER BY chapter ASC, verse ASC';
+
+  const stmt = db.prepare(sql);
+  stmt.bind(params);
 
   const verses = [];
   while (stmt.step()) {

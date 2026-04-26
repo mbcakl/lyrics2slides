@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { toSuperscript, reSplitBible } from './bible.js';
+import { toSuperscript, reSplitBible, parseReference } from './bible.js';
 import { dynamicSplit } from './dynamicSplitter.js';
 import { state, setMode, setBiblePrimaryVerses, setSlides } from './state.js';
 
@@ -18,6 +18,45 @@ describe('Bible utilities', () => {
       expect(toSuperscript('1')).toBe('¹');
       expect(toSuperscript('12')).toBe('¹²');
       expect(toSuperscript('0')).toBe('⁰');
+    });
+  });
+
+  describe('parseReference', () => {
+    it('handles empty string (whole book)', () => {
+      expect(parseReference('GEN', '')).toEqual({ book: 'GEN' });
+      expect(parseReference('GEN', '  ')).toEqual({ book: 'GEN' });
+    });
+
+    it('handles chapter only', () => {
+      expect(parseReference('GEN', '1')).toEqual({
+        book: 'GEN',
+        chapter: 1,
+        startVerse: null,
+        endVerse: null
+      });
+    });
+
+    it('handles chapter and single verse', () => {
+      expect(parseReference('GEN', '1:1')).toEqual({
+        book: 'GEN',
+        chapter: 1,
+        startVerse: 1,
+        endVerse: 1
+      });
+    });
+
+    it('handles chapter and verse range', () => {
+      expect(parseReference('GEN', '1:1-5')).toEqual({
+        book: 'GEN',
+        chapter: 1,
+        startVerse: 1,
+        endVerse: 5
+      });
+    });
+
+    it('returns null for invalid format', () => {
+      expect(parseReference('GEN', 'abc')).toBeNull();
+      expect(parseReference('GEN', '1:abc')).toBeNull();
     });
   });
 
