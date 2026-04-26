@@ -66,7 +66,7 @@
           <div class="textarea-group" style="margin-bottom: 1rem;">
             <label for="bible-book">Bible Book</label>
             <div style="display: flex; gap: 0.5rem;">
-              <select id="bible-book" class="text-input" style="flex: 1;"></select>
+              <button id="bible-book-btn" class="text-input" style="flex: 1; text-align: left;">创世记 Genesis</button>
               <input type="text" id="bible-chapter-verse" placeholder="e.g., 3:1-16" class="text-input" style="flex: 1;">
             </div>
           </div>
@@ -169,6 +169,23 @@
     <div class="primary-measure"></div>
     <div class="secondary-measure" style="line-height: 1.4;"></div>
   </div>
+
+  <dialog id="bible-picker-dialog" class="picker-dialog">
+    <div class="picker-header">
+      <h3>Select Bible Book</h3>
+      <button id="close-picker-btn" class="close-btn">&times;</button>
+    </div>
+    <div class="picker-body">
+      <div class="picker-section">
+        <h4>Old Testament 旧约</h4>
+        <div id="ot-grid" class="book-grid"></div>
+      </div>
+      <div class="picker-section">
+        <h4>New Testament 新约</h4>
+        <div id="nt-grid" class="book-grid"></div>
+      </div>
+    </div>
+  </dialog>
 
   <script type="module" src="./main.js"></script>
 </body>
