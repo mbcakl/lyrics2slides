@@ -22,9 +22,9 @@ describe('Bible utilities', () => {
   });
 
   describe('parseReference', () => {
-    it('handles empty string (whole book)', () => {
-      expect(parseReference('GEN', '')).toEqual({ book: 'GEN' });
-      expect(parseReference('GEN', '  ')).toEqual({ book: 'GEN' });
+    it('returns null for empty string', () => {
+      expect(parseReference('GEN', '')).toBeNull();
+      expect(parseReference('GEN', '  ')).toBeNull();
     });
 
     it('handles chapter only', () => {

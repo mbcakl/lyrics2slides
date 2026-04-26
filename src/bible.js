@@ -221,7 +221,7 @@ export async function initBible() {
 
     const ref = parseReference(bookCode, cvStr);
     if (!ref) {
-      alert('Invalid chapter/verse format. Use e.g., "3:16" or "1:1-5"');
+      alert('Please enter at least a chapter number (e.g., "3" or "3:16")');
       return;
     }
 
@@ -293,7 +293,7 @@ export function reSplitBible() {
 
 export function parseReference(bookCode, cvStr) {
   if (!cvStr || !cvStr.trim()) {
-    return { book: bookCode }; // Whole book
+    return null; // Require at least a chapter
   }
 
   // Handle "Chapter" or "Chapter:Verse" or "Chapter:Start-End"
