@@ -225,15 +225,6 @@ export async function initBible() {
       return;
     }
 
-    const pVersion = document.getElementById('bible-translation-primary').value;
-    const pVerses = fetchVerses(ref, pVersion);
-    
-    let sVerses = [];
-    if (secEnable.checked) {
-      const sVersion = secTrans.value;
-      sVerses = fetchVerses(ref, sVersion);
-    }
-
     const bookNames = bookNamesMap[ref.book];
     let range = '';
     if (ref.chapter) {
@@ -242,8 +233,22 @@ export async function initBible() {
         range += `:${ref.startVerse}${ref.endVerse !== ref.startVerse ? '-' + ref.endVerse : ''}`;
       }
     }
-    const pRef = `${bookNames.zh}${range}`;
-    const sRef = `${bookNames.en}${range}`;
+
+    const pVersion = document.getElementById('bible-translation-primary').value;
+    const pVerses = fetchVerses(ref, pVersion);
+    
+    let sVerses = [];
+    let sVersion = '';
+    if (secEnable.checked) {
+      sVersion = secTrans.value;
+      sVerses = fetchVerses(ref, sVersion);
+    }
+
+    const pRef = `${pVersion === 'CUNPSS-神' ? bookNames.zh : bookNames.en}${range}`;
+    let sRef = '';
+    if (secEnable.checked) {
+      sRef = `${sVersion === 'CUNPSS-神' ? bookNames.zh : bookNames.en}${range}`;
+    }
 
     // Replace old slide generation with dynamicSplit
     const settings = state.settings;
