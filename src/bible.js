@@ -2,6 +2,7 @@ import initSqlJs from 'sql.js';
 import { 
   state, 
   setMode, 
+  setBibleSelectedBook,
   setBiblePrimaryText, 
   setBibleSecondaryText, 
   setBiblePrimaryVerses,
@@ -122,6 +123,13 @@ const bookMap = {
   'REV': { en: 'Revelation', zh: '启示录' }
   };
 
+const otBooks = [
+  'GEN', 'EXO', 'LEV', 'NUM', 'DEU', 'JOS', 'JDG', 'RUT', '1SA', '2SA',
+  '1KI', '2KI', '1CH', '2CH', 'EZR', 'NEH', 'EST', 'JOB', 'PSA', 'PRO',
+  'ECC', 'SNG', 'ISA', 'JER', 'LAM', 'EZK', 'DAN', 'HOS', 'JOL', 'AMO',
+  'OBA', 'JON', 'MIC', 'NAM', 'HAB', 'ZEP', 'HAG', 'ZEC', 'MAL'
+];
+
 export function toSuperscript(numStr) {
   return String(numStr).split('').map(c => superscriptMap[c] || c).join('');
 }
@@ -147,7 +155,11 @@ export async function initBible() {
   const lyricsContainer = document.getElementById('lyrics-container');
   const bibleContainer = document.getElementById('bible-container');
   const fetchBtn = document.getElementById('fetch-bible-btn');
-  const bookSelect = document.getElementById('bible-book');
+  const bookBtn = document.getElementById('bible-book-btn');
+  const pickerDialog = document.getElementById('bible-picker-dialog');
+  const otGrid = document.getElementById('ot-grid');
+  const ntGrid = document.getElementById('nt-grid');
+  const closePickerBtn = document.getElementById('close-picker-btn');
   const chapterVerseInput = document.getElementById('bible-chapter-verse');
   const secEnable = document.getElementById('bible-secondary-enable');
   const secTrans = document.getElementById('bible-translation-secondary');
@@ -163,13 +175,52 @@ export async function initBible() {
     }
   }
 
-  // Populate book select
-  Object.entries(bookNamesMap).forEach(([code, names]) => {
-    const option = document.createElement('option');
-    option.value = code;
-    option.textContent = `${names.zh} ${names.en}`;
-    bookSelect.appendChild(option);
-  });
+  function populateGrids() {
+    otGrid.innerHTML = '';
+    ntGrid.innerHTML = '';
+    
+    Object.entries(bookNamesMap).forEach(([code, names]) => {
+      const btn = document.createElement('button');
+      btn.className = 'book-btn';
+      if (state.bibleSelectedBook === code) btn.classList.add('active');
+      
+      btn.innerHTML = `
+        <span class="zh">${names.zh}</span>
+        <span class="en">${names.en}</span>
+      `;
+      
+      btn.onclick = (e) => {
+        e.preventDefault(); // Prevent any default behavior
+        setBibleSelectedBook(code);
+        pickerDialog.close();
+        updateBookButton();
+      };
+      
+      if (otBooks.includes(code)) {
+        otGrid.appendChild(btn);
+      } else {
+        ntGrid.appendChild(btn);
+      }
+    });
+  }
+
+  function updateBookButton() {
+    const names = bookNamesMap[state.bibleSelectedBook];
+    bookBtn.textContent = `${names.zh} ${names.en}`;
+  }
+
+  bookBtn.onclick = (e) => {
+    e.preventDefault();
+    populateGrids();
+    pickerDialog.showModal();
+  };
+
+  closePickerBtn.onclick = (e) => {
+    e.preventDefault();
+    pickerDialog.close();
+  };
+
+  updateBookButton();
 
   tabLyrics.addEventListener('click', () => {
     setMode('lyrics');
@@ -215,7 +266,7 @@ export async function initBible() {
   });
 
   fetchBtn.addEventListener('click', async () => {
-    const bookCode = bookSelect.value;
+    const bookCode = state.bibleSelectedBook;
     const cvStr = chapterVerseInput.value.trim();
     if (!cvStr || !db) return;
 
