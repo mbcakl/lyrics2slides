@@ -3,12 +3,21 @@ import { renderSlide } from './renderer.js';
 const slidePreview = document.getElementById('slide-preview');
 const syncChannel = new BroadcastChannel('lyrics2slides_sync');
 
+let lastState = null;
+
+function render() {
+  if (!lastState) return;
+  const { slides, currentSlide, settings, mode } = lastState;
+  const slide = slides[currentSlide];
+  const isBible = mode === 'bible';
+  slidePreview.style.backgroundColor = isBible ? settings.bibleBackgroundColor : settings.backgroundColor;
+  renderSlide(slidePreview, slide, settings, { mode });
+}
+
 syncChannel.onmessage = (event) => {
   if (event.data.type === 'SYNC_STATE') {
-    const { slides, currentSlide, settings, mode } = event.data.state;
-    const isBible = mode === 'bible';
-    slidePreview.style.backgroundColor = isBible ? settings.bibleBackgroundColor : settings.backgroundColor;
-    renderSlide(slidePreview, slides[currentSlide], settings, { mode });
+    lastState = event.data.state;
+    render();
   }
 };
 
@@ -29,6 +38,6 @@ document.addEventListener('keydown', (e) => {
 });
 
 window.addEventListener('resize', () => {
-  // Re-render when resized
-  syncChannel.postMessage({ type: 'REQUEST_STATE' });
+  // Re-render when resized using last known state
+  requestAnimationFrame(render);
 });
