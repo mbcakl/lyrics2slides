@@ -1,6 +1,7 @@
 import initSqlJs from 'sql.js';
 import { state, setMode, setBiblePrimaryText, setBibleSecondaryText, setSlides } from './state.js';
 import { parseLyrics } from './parser.js';
+import { dynamicSplit } from './dynamicSplitter.js';
 
 let db = null;
 
@@ -41,7 +42,7 @@ const bookMap = {
   '犹大书': 'JUD', '启示录': 'REV'
 };
 
-function toSuperscript(numStr) {
+export function toSuperscript(numStr) {
   return String(numStr).split('').map(c => superscriptMap[c] || c).join('');
 }
 
@@ -135,19 +136,29 @@ export async function initBible() {
 
     const pVersion = document.getElementById('bible-translation-primary').value;
     const pVerses = fetchVerses(ref, pVersion);
-    const pFormatted = formatVerses(pVerses);
-    primaryTextarea.value = pFormatted;
-    setBiblePrimaryText(pFormatted);
-
+    
+    let sVerses = [];
     if (secEnable.checked) {
       const sVersion = secTrans.value;
-      const sVerses = fetchVerses(ref, sVersion);
-      const sFormatted = formatVerses(sVerses);
-      secondaryTextarea.value = sFormatted;
-      setBibleSecondaryText(sFormatted);
+      sVerses = fetchVerses(ref, sVersion);
     }
 
-    updateSlidesFromMode();
+    // Replace old slide generation with dynamicSplit
+    const settings = state.settings;
+    const slides = dynamicSplit(pVerses, sVerses, settings);
+    
+    // Update textareas with the "joined" view (all verses in one block per translation)
+    const pText = pVerses.map(v => `${toSuperscript(v.verse)} ${v.text}`).join(' ');
+    primaryTextarea.value = pText;
+    setBiblePrimaryText(pText);
+
+    if (secEnable.checked) {
+      const sText = sVerses.map(v => `${toSuperscript(v.verse)} ${v.text}`).join(' ');
+      secondaryTextarea.value = sText;
+      setBibleSecondaryText(sText);
+    }
+
+    setSlides(slides);
   });
 }
 
@@ -200,6 +211,14 @@ function fetchVerses(ref, version) {
   return verses;
 }
 
-function formatVerses(verses) {
-  return verses.map(v => `${toSuperscript(v.verse)} ${v.text}`).join('\n\n');
+export function formatVerses(verses) {
+  return verses.map((v, i) => {
+    const text = `${toSuperscript(v.verse)} ${v.text}`;
+    // Every 4 verses use double newline to create a new slide
+    if (i > 0 && i % 4 === 0) {
+      return '\n\n' + text;
+    }
+    // Join verses with space instead of newline
+    return (i === 0 ? '' : ' ') + text;
+  }).join('');
 }
