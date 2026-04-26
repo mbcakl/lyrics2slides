@@ -5,8 +5,8 @@ const syncChannel = new BroadcastChannel('lyrics2slides_sync');
 
 syncChannel.onmessage = (event) => {
   if (event.data.type === 'SYNC_STATE') {
-    const { slides, currentSlide, settings } = event.data.state;
-    renderSlide(slidePreview, slides[currentSlide], settings);
+    const { slides, currentSlide, settings, mode } = event.data.state;
+    renderSlide(slidePreview, slides[currentSlide], settings, { mode });
   }
 };
 
