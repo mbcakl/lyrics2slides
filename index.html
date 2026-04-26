@@ -64,15 +64,18 @@
 
         <div id="bible-container" style="display: none;">
           <div class="textarea-group" style="margin-bottom: 1rem;">
-            <label for="bible-reference">Bible Reference</label>
-            <input type="text" id="bible-reference" placeholder="e.g., John 3:16" class="text-input">
+            <label for="bible-book">Bible Book</label>
+            <div style="display: flex; gap: 0.5rem;">
+              <select id="bible-book" class="text-input" style="flex: 1;"></select>
+              <input type="text" id="bible-chapter-verse" placeholder="e.g., 3:1-16" class="text-input" style="flex: 1;">
+            </div>
           </div>
           
           <div class="textarea-group" style="margin-bottom: 1rem;">
             <label for="bible-translation-primary">Primary Translation</label>
             <select id="bible-translation-primary" class="text-input">
+              <option value="CUNPSS-神" selected>CUNPSS (The Chinese Union Version)</option>
               <option value="NIV">NIV (New International Version)</option>
-              <option value="CUNPSS-神">CUNPSS (The Chinese Union Version)</option>
             </select>
           </div>
 
@@ -81,8 +84,8 @@
               <input type="checkbox" id="bible-secondary-enable"> Enable Secondary Translation
             </label>
             <select id="bible-translation-secondary" class="text-input" disabled>
+              <option value="NIV" selected>NIV (New International Version)</option>
               <option value="CUNPSS-神">CUNPSS (The Chinese Union Version)</option>
-              <option value="NIV">NIV (New International Version)</option>
             </select>
           </div>
 
@@ -98,7 +101,7 @@
             <textarea id="bible-primary-text" placeholder="Fetched verses will appear here..."></textarea>
             <div class="font-settings" id="bible-primary-font-group">
               <input type="text" id="bible-font-primary" list="font-suggestions" value="Kaiti SC" placeholder="Font name">
-              <input type="number" id="bible-size-primary" min="8" max="200" value="64">
+              <input type="number" id="bible-size-primary" min="8" max="200" value="40">
               <span class="size-unit">pt</span>
               <input type="color" id="bible-color-primary" value="#ffff00">
               <label class="bold-label"><input type="checkbox" id="bible-bold-primary" checked>B</label>

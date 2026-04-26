@@ -6,6 +6,8 @@ import {
   setBibleSecondaryText, 
   setBiblePrimaryVerses,
   setBibleSecondaryVerses,
+  setBiblePrimaryReference,
+  setBibleSecondaryReference,
   setSlides,
   subscribe
 } from './state.js';
@@ -33,7 +35,7 @@ const bookMap = {
   'philippians': 'PHP', 'colossians': 'COL', '1 thessalonians': '1TH', '2 thessalonians': '2TH',
   '1 timothy': '1TI', '2 timothy': '2TI', 'titus': 'TIT', 'philemon': 'PHM', 'hebrews': 'HEB',
   'james': 'JAS', '1 peter': '1PE', '2 peter': '2PE', '1 john': '1JN', '2 john': '2JN',
-  '3 john': '3JN', 'jude': 'JUD', 'revelation': 'REV',
+  'jude': 'JUD', 'revelation': 'REV',
   // Chinese names mapping
   '创世记': 'GEN', '出埃及记': 'EXO', '利未记': 'LEV', '民数记': 'NUM', '申命记': 'DEU',
   '约书亚记': 'JOS', '士师记': 'JDG', '路得记': 'RUT', '撒母耳记上': '1SA', '撒母耳记下': '2SA',
@@ -49,7 +51,76 @@ const bookMap = {
   '提摩太后书': '2TI', '提多书': 'TIT', '腓利门书': 'PHM', '希伯来书': 'HEB', '雅各书': 'JAS',
   '彼得前书': '1PE', '彼得后书': '2PE', '约翰一书': '1JN', '约翰二书': '2JN', '约翰三书': '3JN',
   '犹大书': 'JUD', '启示录': 'REV'
-};
+  };
+
+  const bookNamesMap = {
+  'GEN': { en: 'Genesis', zh: '创世记' },
+  'EXO': { en: 'Exodus', zh: '出埃及记' },
+  'LEV': { en: 'Leviticus', zh: '利未记' },
+  'NUM': { en: 'Numbers', zh: '民数记' },
+  'DEU': { en: 'Deuteronomy', zh: '申命记' },
+  'JOS': { en: 'Joshua', zh: '约书亚记' },
+  'JDG': { en: 'Judges', zh: '士师记' },
+  'RUT': { en: 'Ruth', zh: '路得记' },
+  '1SA': { en: '1 Samuel', zh: '撒母耳记上' },
+  '2SA': { en: '2 Samuel', zh: '撒母耳记下' },
+  '1KI': { en: '1 Kings', zh: '列王纪上' },
+  '2KI': { en: '2 Kings', zh: '列王纪下' },
+  '1CH': { en: '1 Chronicles', zh: '历代志上' },
+  '2CH': { en: '2 Chronicles', zh: '历代志下' },
+  'EZR': { en: 'Ezra', zh: '拉结记' },
+  'NEH': { en: 'Nehemiah', zh: '尼希米记' },
+  'EST': { en: 'Esther', zh: '以斯帖记' },
+  'JOB': { en: 'Job', zh: '约伯记' },
+  'PSA': { en: 'Psalms', zh: '诗篇' },
+  'PRO': { en: 'Proverbs', zh: '箴言' },
+  'ECC': { en: 'Ecclesiastes', zh: '传道书' },
+  'SNG': { en: 'Song of Solomon', zh: '雅歌' },
+  'ISA': { en: 'Isaiah', zh: '以赛亚书' },
+  'JER': { en: 'Jeremiah', zh: '耶利米书' },
+  'LAM': { en: 'Lamentations', zh: '耶利米哀歌' },
+  'EZK': { en: 'Ezekiel', zh: '以西结书' },
+  'DAN': { en: 'Daniel', zh: '但以理书' },
+  'HOS': { en: 'Hosea', zh: '何西阿书' },
+  'JOL': { en: 'Joel', zh: '约珥书' },
+  'AMO': { en: 'Amos', zh: '阿摩司书' },
+  'OBA': { en: 'Obadiah', zh: '俄巴底亚书' },
+  'JON': { en: 'Jonah', zh: '约拿书' },
+  'MIC': { en: 'Micah', zh: '弥迦书' },
+  'NAM': { en: 'Nahum', zh: '那鸿书' },
+  'HAB': { en: 'Habakkuk', zh: '哈巴谷书' },
+  'ZEP': { en: 'Zephaniah', zh: '西番雅书' },
+  'HAG': { en: 'Haggai', zh: '哈该书' },
+  'ZEC': { en: 'Zechariah', zh: '撒迦利亚书' },
+  'MAL': { en: 'Malachi', zh: '玛拉基书' },
+  'MAT': { en: 'Matthew', zh: '马太福音' },
+  'MRK': { en: 'Mark', zh: '马可福音' },
+  'LUK': { en: 'Luke', zh: '路加福音' },
+  'JHN': { en: 'John', zh: '约翰福音' },
+  'ACT': { en: 'Acts', zh: '使徒行传' },
+  'ROM': { en: 'Romans', zh: '罗马书' },
+  '1CO': { en: '1 Corinthians', zh: '哥林多前书' },
+  '2CO': { en: '2 Corinthians', zh: '哥林多后书' },
+  'GAL': { en: 'Galatians', zh: '加拉太书' },
+  'EPH': { en: 'Ephesians', zh: '以弗所书' },
+  'PHP': { en: 'Philippians', zh: '腓立比书' },
+  'COL': { en: 'Colossians', zh: '歌罗西书' },
+  '1TH': { en: '1 Thessalonians', zh: '帖撒罗尼迦前书' },
+  '2TH': { en: '2 Thessalonians', zh: '帖撒罗尼迦后书' },
+  '1TI': { en: '1 Timothy', zh: '提摩太前书' },
+  '2TI': { en: '2 Timothy', zh: '提摩太后书' },
+  'TIT': { en: 'Titus', zh: '提多书' },
+  'PHM': { en: 'Philemon', zh: '腓利门书' },
+  'HEB': { en: 'Hebrews', zh: '希伯来书' },
+  'JAS': { en: 'James', zh: '雅各书' },
+  '1PE': { en: '1 Peter', zh: '彼得前书' },
+  '2PE': { en: '2 Peter', zh: '彼得后书' },
+  '1JN': { en: '1 John', zh: '约翰一书' },
+  '2JN': { en: '2 John', zh: '约翰二书' },
+  '3JN': { en: '3 John', zh: '约翰三书' },
+  'JUD': { en: 'Jude', zh: '犹大书' },
+  'REV': { en: 'Revelation', zh: '启示录' }
+  };
 
 export function toSuperscript(numStr) {
   return String(numStr).split('').map(c => superscriptMap[c] || c).join('');
@@ -76,6 +147,8 @@ export async function initBible() {
   const lyricsContainer = document.getElementById('lyrics-container');
   const bibleContainer = document.getElementById('bible-container');
   const fetchBtn = document.getElementById('fetch-bible-btn');
+  const bookSelect = document.getElementById('bible-book');
+  const chapterVerseInput = document.getElementById('bible-chapter-verse');
   const secEnable = document.getElementById('bible-secondary-enable');
   const secTrans = document.getElementById('bible-translation-secondary');
   const secGroup = document.getElementById('bible-secondary-group');
@@ -89,6 +162,14 @@ export async function initBible() {
       setSlides(parseLyrics(state.biblePrimaryText, state.bibleSecondaryText));
     }
   }
+
+  // Populate book select
+  Object.entries(bookNamesMap).forEach(([code, names]) => {
+    const option = document.createElement('option');
+    option.value = code;
+    option.textContent = `${names.zh} ${names.en}`;
+    bookSelect.appendChild(option);
+  });
 
   tabLyrics.addEventListener('click', () => {
     setMode('lyrics');
@@ -134,12 +215,13 @@ export async function initBible() {
   });
 
   fetchBtn.addEventListener('click', async () => {
-    const refStr = document.getElementById('bible-reference').value.trim();
-    if (!refStr || !db) return;
+    const bookCode = bookSelect.value;
+    const cvStr = chapterVerseInput.value.trim();
+    if (!cvStr || !db) return;
 
-    const ref = parseReference(refStr);
+    const ref = parseReference(bookCode, cvStr);
     if (!ref) {
-      alert('Invalid reference format. Use e.g., "John 3:16" or "Genesis 1:1-5"');
+      alert('Invalid chapter/verse format. Use e.g., "3:16" or "1:1-5"');
       return;
     }
 
@@ -152,9 +234,14 @@ export async function initBible() {
       sVerses = fetchVerses(ref, sVersion);
     }
 
+    const bookNames = bookNamesMap[ref.book];
+    const range = ref.startVerse === ref.endVerse ? ref.startVerse : `${ref.startVerse}-${ref.endVerse}`;
+    const pRef = `${bookNames.zh} ${ref.chapter}:${range}`;
+    const sRef = `${bookNames.en} ${ref.chapter}:${range}`;
+
     // Replace old slide generation with dynamicSplit
     const settings = state.settings;
-    const slides = dynamicSplit(pVerses, sVerses, settings);
+    const slides = dynamicSplit(pVerses, sVerses, settings, pRef, sRef);
     
     // Update textareas with the "joined" view (all verses in one block per translation)
     const pText = pVerses.map(v => `${toSuperscript(v.verse)} ${v.text}`).join(' ');
@@ -169,6 +256,8 @@ export async function initBible() {
 
     setBiblePrimaryVerses(pVerses);
     setBibleSecondaryVerses(sVerses);
+    setBiblePrimaryReference(pRef);
+    setBibleSecondaryReference(sRef);
     setSlides(slides);
   });
 
@@ -186,36 +275,27 @@ export async function initBible() {
 
 export function reSplitBible() {
   if (state.mode !== 'bible' || state.biblePrimaryVerses.length === 0) return;
-  const slides = dynamicSplit(state.biblePrimaryVerses, state.bibleSecondaryVerses, state.settings);
+  const slides = dynamicSplit(
+    state.biblePrimaryVerses, 
+    state.bibleSecondaryVerses, 
+    state.settings,
+    state.biblePrimaryReference,
+    state.bibleSecondaryReference
+  );
   setSlides(slides);
 }
 
-function parseReference(refStr) {
-  // Simple parser for "Book Chapter:Verse" or "Book Chapter:Start-End"
-  const regex = /^(.+?)\s+(\d+):(\d+)(?:-(\d+))?$/;
-  const match = refStr.match(regex);
+function parseReference(bookCode, cvStr) {
+  // Simple parser for "Chapter:Verse" or "Chapter:Start-End"
+  const regex = /^(\d+):(\d+)(?:-(\d+))?$/;
+  const match = cvStr.match(regex);
   if (!match) return null;
 
-  let book = match[1].toLowerCase().trim();
-  // Map full name to abbreviation if exists
-  if (bookMap[book]) {
-    book = bookMap[book];
-  } else {
-    // Check if it's already a valid 3-letter abbreviation by searching keys/values
-    const values = Object.values(bookMap);
-    if (!values.includes(book.toUpperCase())) {
-      // Try to find by partial match or just uppercase if unknown
-      book = book.toUpperCase();
-    } else {
-      book = book.toUpperCase();
-    }
-  }
-
   return {
-    book: book,
-    chapter: parseInt(match[2]),
-    startVerse: parseInt(match[3]),
-    endVerse: match[4] ? parseInt(match[4]) : parseInt(match[3])
+    book: bookCode,
+    chapter: parseInt(match[1]),
+    startVerse: parseInt(match[2]),
+    endVerse: match[3] ? parseInt(match[3]) : parseInt(match[2])
   };
 }
 

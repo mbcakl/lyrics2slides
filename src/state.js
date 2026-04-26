@@ -7,6 +7,8 @@ export const state = {
   bibleSecondaryText: '',
   biblePrimaryVerses: [],
   bibleSecondaryVerses: [],
+  biblePrimaryReference: '',
+  bibleSecondaryReference: '',
   slides: [],
   currentSlide: 0,
   settings: {
@@ -89,6 +91,16 @@ export function setBiblePrimaryVerses(verses) {
 
 export function setBibleSecondaryVerses(verses) {
   state.bibleSecondaryVerses = verses;
+  notify();
+}
+
+export function setBiblePrimaryReference(ref) {
+  state.biblePrimaryReference = ref;
+  notify();
+}
+
+export function setBibleSecondaryReference(ref) {
+  state.bibleSecondaryReference = ref;
   notify();
 }
 

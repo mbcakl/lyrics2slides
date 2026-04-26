@@ -89,10 +89,10 @@ describe('dynamicSplit', () => {
     });
 
     const pVerses = [{ verse: 1, text: 'V1' }, { verse: 2, text: 'V2' }];
-    const slides = dynamicSplit(pVerses, [], settings);
+    const slides = dynamicSplit(pVerses, [], settings, 'John 3:1-2');
     
     expect(slides).toHaveLength(2);
     expect(slides[0].primary).toEqual(['¹ V1']);
-    expect(slides[1].primary).toEqual(['² V2']);
+    expect(slides[1].primary).toEqual(['² V2 (John 3:1-2)']);
   });
 });

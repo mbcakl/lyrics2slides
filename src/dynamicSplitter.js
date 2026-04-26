@@ -1,7 +1,7 @@
 import { PPTX_SLIDE_HEIGHT_PT, LAYOUT } from './constants.js';
 import { toSuperscript } from './bible.js';
 
-export function dynamicSplit(primaryVerses, secondaryVerses, settings) {
+export function dynamicSplit(primaryVerses, secondaryVerses, settings, primaryRef = '', secondaryRef = '') {
   const measureBox = document.getElementById('measure-box');
   if (!measureBox) return []; // Guard for non-browser envs
   
@@ -57,10 +57,17 @@ export function dynamicSplit(primaryVerses, secondaryVerses, settings) {
 
   // Push final group
   if (currentPrimary.length > 0) {
+    const pText = currentPrimary.join(' ');
+    const sText = hasSecondary ? currentSecondary.join(' ') : '';
+    
+    // Append attribution to the last slide
+    const pAttributed = primaryRef ? `${pText} (${primaryRef})` : pText;
+    const sAttributed = secondaryRef ? `${sText} (${secondaryRef})` : sText;
+
     slides.push({
       id: slides.length + 1,
-      primary: [currentPrimary.join(' ')],
-      secondary: hasSecondary ? [currentSecondary.join(' ')] : []
+      primary: [pAttributed],
+      secondary: hasSecondary ? [sAttributed] : []
     });
   }
 
