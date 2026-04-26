@@ -6,6 +6,8 @@ const syncChannel = new BroadcastChannel('lyrics2slides_sync');
 syncChannel.onmessage = (event) => {
   if (event.data.type === 'SYNC_STATE') {
     const { slides, currentSlide, settings, mode } = event.data.state;
+    const isBible = mode === 'bible';
+    slidePreview.style.backgroundColor = isBible ? settings.bibleBackgroundColor : settings.backgroundColor;
     renderSlide(slidePreview, slides[currentSlide], settings, { mode });
   }
 };
