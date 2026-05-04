@@ -257,11 +257,15 @@ export async function initBible() {
 
   primaryTextarea.addEventListener('input', (e) => {
     setBiblePrimaryText(e.target.value);
+    setBiblePrimaryVerses([]);
+    setBibleSecondaryVerses([]);
     updateSlidesFromMode();
   });
 
   secondaryTextarea.addEventListener('input', (e) => {
     setBibleSecondaryText(e.target.value);
+    setBiblePrimaryVerses([]);
+    setBibleSecondaryVerses([]);
     updateSlidesFromMode();
   });
 
@@ -305,13 +309,13 @@ export async function initBible() {
     const settings = state.settings;
     const slides = dynamicSplit(pVerses, sVerses, settings, pRef, sRef);
     
-    // Update textareas with the "joined" view (all verses in one block per translation)
-    const pText = pVerses.map(v => `${toSuperscript(v.verse)} ${v.text}`).join(' ');
+    // Update textareas from the generated slides to preserve breaks
+    const pText = slides.map(s => s.primary.join('\n')).join('\n\n');
     primaryTextarea.value = pText;
     setBiblePrimaryText(pText);
 
     if (secEnable.checked) {
-      const sText = sVerses.map(v => `${toSuperscript(v.verse)} ${v.text}`).join(' ');
+      const sText = slides.map(s => s.secondary.join('\n')).join('\n\n');
       secondaryTextarea.value = sText;
       setBibleSecondaryText(sText);
     }
