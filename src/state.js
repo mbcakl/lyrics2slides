@@ -1,4 +1,7 @@
 // Application state
+const storedVerses = localStorage.getItem('lyrics2slides_saved_verses');
+const initialSavedVerses = storedVerses ? JSON.parse(storedVerses) : [];
+
 export const state = {
   primaryLyrics: '',
   secondaryLyrics: '',
@@ -10,6 +13,7 @@ export const state = {
   bibleSecondaryVerses: [],
   biblePrimaryReference: '',
   bibleSecondaryReference: '',
+  savedVerses: initialSavedVerses,
   slides: [],
   currentSlide: 0,
   settings: {
@@ -107,6 +111,29 @@ export function setBiblePrimaryReference(ref) {
 
 export function setBibleSecondaryReference(ref) {
   state.bibleSecondaryReference = ref;
+  notify();
+}
+
+export function addSavedVerse(verse) {
+  // verse: { id, book, reference, pVersion, sVersion, sEnabled }
+  // Check for duplicates
+  const exists = state.savedVerses.some(v => 
+    v.book === verse.book && 
+    v.reference === verse.reference && 
+    v.pVersion === verse.pVersion &&
+    v.sVersion === verse.sVersion &&
+    v.sEnabled === verse.sEnabled
+  );
+  if (!exists) {
+    state.savedVerses.push(verse);
+    localStorage.setItem('lyrics2slides_saved_verses', JSON.stringify(state.savedVerses));
+    notify();
+  }
+}
+
+export function removeSavedVerse(id) {
+  state.savedVerses = state.savedVerses.filter(v => v.id !== id);
+  localStorage.setItem('lyrics2slides_saved_verses', JSON.stringify(state.savedVerses));
   notify();
 }
 

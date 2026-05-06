@@ -19,6 +19,14 @@ class MockBroadcastChannel {
 
 vi.stubGlobal('BroadcastChannel', MockBroadcastChannel);
 
+// Mock localStorage
+const mockGetItem = vi.fn();
+const mockSetItem = vi.fn();
+vi.stubGlobal('localStorage', {
+  getItem: mockGetItem,
+  setItem: mockSetItem,
+});
+
 // Reset module state between tests
 let stateModule;
 
@@ -26,7 +34,66 @@ describe('state module', () => {
   beforeEach(async () => {
     vi.resetModules();
     mockPostMessage.mockClear();
+    mockGetItem.mockReset();
+    mockGetItem.mockReturnValue(null);
+    mockSetItem.mockClear();
     stateModule = await import('./state.js');
+  });
+
+  describe('savedVerses', () => {
+    it('initializes from localStorage if available', async () => {
+      const saved = [{ id: 1, book: 'GEN', reference: '1:1' }];
+      mockGetItem.mockReturnValue(JSON.stringify(saved));
+      
+      // We need to re-import to trigger the initialization with the mocked value
+      vi.resetModules();
+      stateModule = await import('./state.js');
+      
+      expect(stateModule.state.savedVerses).toEqual(saved);
+      expect(mockGetItem).toHaveBeenCalledWith('lyrics2slides_saved_verses');
+    });
+
+    it('initializes with empty array if localStorage is empty', () => {
+      // mockGetItem returns null by default in beforeEach
+      expect(stateModule.state.savedVerses).toEqual([]);
+    });
+
+    it('addSavedVerse adds a verse, persists and notifies', () => {
+      const listener = vi.fn();
+      stateModule.subscribe(listener);
+      const verse = { id: 1, book: 'GEN', reference: '1:1', pVersion: 'NIV', sVersion: 'KJV', sEnabled: true };
+      
+      stateModule.addSavedVerse(verse);
+      
+      expect(stateModule.state.savedVerses).toContainEqual(verse);
+      expect(mockSetItem).toHaveBeenCalledWith('lyrics2slides_saved_verses', JSON.stringify([verse]));
+      expect(listener).toHaveBeenCalled();
+    });
+
+    it('addSavedVerse prevents duplicates', () => {
+      const verse = { id: 1, book: 'GEN', reference: '1:1', pVersion: 'NIV', sVersion: 'KJV', sEnabled: true };
+      stateModule.addSavedVerse(verse);
+      mockSetItem.mockClear();
+      
+      // Try adding same verse again
+      stateModule.addSavedVerse(verse);
+      
+      expect(stateModule.state.savedVerses).toHaveLength(1);
+      expect(mockSetItem).not.toHaveBeenCalled();
+    });
+
+    it('removeSavedVerse removes a verse, persists and notifies', () => {
+      const verse = { id: 1, book: 'GEN', reference: '1:1' };
+      stateModule.state.savedVerses = [verse];
+      const listener = vi.fn();
+      stateModule.subscribe(listener);
+      
+      stateModule.removeSavedVerse(1);
+      
+      expect(stateModule.state.savedVerses).not.toContainEqual(verse);
+      expect(mockSetItem).toHaveBeenCalledWith('lyrics2slides_saved_verses', JSON.stringify([]));
+      expect(listener).toHaveBeenCalled();
+    });
   });
 
   describe('setPrimaryLyrics', () => {
