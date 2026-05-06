@@ -593,3 +593,63 @@ kbd {
 /* Section Specific Colors */
 #ot-grid .book-btn:not(.active) { border-left: 3px solid #4a90d9; }
 #nt-grid .book-btn:not(.active) { border-left: 3px solid #4ade80; }
+
+/* Saved Verses Grid */
+.saved-verses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.verse-card {
+  position: relative;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.verse-card:hover {
+  border-color: var(--accent);
+  background: var(--bg-primary);
+}
+
+.verse-card .ref {
+  font-weight: bold;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+.verse-card .version {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.delete-card-btn {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.delete-card-btn:hover {
+  background: #ef4444;
+  color: white;
+}

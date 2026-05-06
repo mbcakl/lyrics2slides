@@ -68,6 +68,7 @@
             <div style="display: flex; gap: 0.5rem;">
               <button id="bible-book-btn" class="text-input" style="flex: 1; text-align: left;">创世记 Genesis</button>
               <input type="text" id="bible-chapter-verse" placeholder="e.g., 3:1-16" class="text-input" style="flex: 1;">
+              <button id="save-bible-btn" class="btn-secondary" style="padding: 0.5rem 1rem;" title="Save to Quick Access">💾</button>
             </div>
           </div>
           
@@ -90,6 +91,9 @@
           </div>
 
           <button id="fetch-bible-btn" class="btn-primary" style="margin-bottom: 1rem; width: 100%;">Fetch Verses</button>
+
+          <!-- New Container -->
+          <div id="saved-verses-grid" class="saved-verses-grid"></div>
 
           <div class="header-controls" style="margin-bottom: 1rem; justify-content: flex-start;">
             <label for="bible-bg-color">Bible Background</label>
