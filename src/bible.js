@@ -10,7 +10,9 @@ import {
   setBiblePrimaryReference,
   setBibleSecondaryReference,
   setSlides,
-  subscribe
+  subscribe,
+  addSavedVerse,
+  removeSavedVerse
 } from './state.js';
 import { parseLyrics } from './parser.js';
 import { dynamicSplit } from './dynamicSplitter.js';
@@ -166,6 +168,9 @@ export async function initBible() {
   const secGroup = document.getElementById('bible-secondary-group');
   const primaryTextarea = document.getElementById('bible-primary-text');
   const secondaryTextarea = document.getElementById('bible-secondary-text');
+  const saveBtn = document.getElementById('save-bible-btn');
+  const savedVersesGrid = document.getElementById('saved-verses-grid');
+  const primaryTrans = document.getElementById('bible-translation-primary');
 
   function updateSlidesFromMode() {
     if (state.mode === 'lyrics') {
@@ -209,6 +214,56 @@ export async function initBible() {
     bookBtn.textContent = `${names.zh} ${names.en}`;
   }
 
+  function renderSavedVerses() {
+    if (!savedVersesGrid) return;
+    savedVersesGrid.innerHTML = '';
+
+    state.savedVerses.forEach(v => {
+      const bookNames = bookNamesMap[v.book];
+      const card = document.createElement('div');
+      card.className = 'verse-card';
+      
+      const versions = v.sEnabled ? `${v.pVersion} / ${v.sVersion}` : v.pVersion;
+      
+      card.innerHTML = `
+        <div class="info">
+          <div class="ref">${bookNames.zh} ${v.reference}</div>
+          <div class="version">${versions}</div>
+        </div>
+        <button class="delete-card-btn" title="Remove">&times;</button>
+      `;
+
+      card.onclick = (e) => {
+        if (e.target.classList.contains('delete-card-btn')) {
+          removeSavedVerse(v.id);
+          return;
+        }
+        
+        // Load saved verse
+        setBibleSelectedBook(v.book);
+        updateBookButton();
+        chapterVerseInput.value = v.reference;
+        primaryTrans.value = v.pVersion;
+        secTrans.value = v.sVersion;
+        secEnable.checked = v.sEnabled;
+        
+        // Update UI state for secondary translation
+        secTrans.disabled = !v.sEnabled;
+        if (!v.sEnabled) {
+          secGroup.style.opacity = '0.4';
+          secGroup.style.pointerEvents = 'none';
+        } else {
+          secGroup.style.opacity = '1';
+          secGroup.style.pointerEvents = 'auto';
+        }
+
+        fetchBtn.click();
+      };
+
+      savedVersesGrid.appendChild(card);
+    });
+  }
+
   bookBtn.onclick = (e) => {
     e.preventDefault();
     populateGrids();
@@ -219,6 +274,24 @@ export async function initBible() {
     e.preventDefault();
     pickerDialog.close();
   };
+
+  saveBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    const bookCode = state.bibleSelectedBook;
+    const reference = chapterVerseInput.value.trim();
+    if (!reference) return;
+
+    const verse = {
+      id: Date.now(),
+      book: bookCode,
+      reference,
+      pVersion: primaryTrans.value,
+      sVersion: secTrans.value,
+      sEnabled: secEnable.checked
+    };
+
+    addSavedVerse(verse);
+  });
 
   updateBookButton();
 
@@ -336,7 +409,10 @@ export async function initBible() {
     } else {
       lastSettings = currentSettings;
     }
+    renderSavedVerses();
   });
+
+  renderSavedVerses();
 }
 
 export function reSplitBible() {
