@@ -11,6 +11,7 @@ import {
   setBibleSecondaryReference,
   setSlides,
   subscribe,
+  updateSettings,
   addSavedVerse,
   removeSavedVerse
 } from './state.js';
@@ -314,9 +315,11 @@ export async function initBible() {
   });
 
   secEnable.addEventListener('change', (e) => {
-    secTrans.disabled = !e.target.checked;
-    secondaryTextarea.disabled = !e.target.checked;
-    if (e.target.checked) {
+    const enabled = e.target.checked;
+    updateSettings({ bibleSecondaryEnable: enabled });
+    secTrans.disabled = !enabled;
+    secondaryTextarea.disabled = !enabled;
+    if (enabled) {
       secGroup.style.opacity = '1';
       secGroup.style.pointerEvents = 'auto';
     } else {
@@ -412,6 +415,35 @@ export async function initBible() {
     renderSavedVerses();
   });
 
+  function applyInitialState() {
+    if (state.mode === 'bible') {
+      tabBible.classList.add('active');
+      tabLyrics.classList.remove('active');
+      bibleContainer.style.display = 'block';
+      lyricsContainer.style.display = 'none';
+    } else {
+      tabLyrics.classList.add('active');
+      tabBible.classList.remove('active');
+      lyricsContainer.style.display = 'block';
+      bibleContainer.style.display = 'none';
+    }
+
+    // Handle secondary enable
+    const enabled = state.settings.bibleSecondaryEnable;
+    secEnable.checked = enabled;
+    secTrans.disabled = !enabled;
+    secondaryTextarea.disabled = !enabled;
+    if (enabled) {
+      secGroup.style.opacity = '1';
+      secGroup.style.pointerEvents = 'auto';
+    } else {
+      secGroup.style.opacity = '0.4';
+      secGroup.style.pointerEvents = 'none';
+    }
+  }
+
+  applyInitialState();
+  updateSlidesFromMode();
   renderSavedVerses();
 }
 

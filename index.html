@@ -24,11 +24,11 @@
       <!-- Left: Lyrics Input -->
       <section class="input-section">
         <div class="tabs">
-          <button id="tab-lyrics" class="tab-btn active">Lyrics</button>
-          <button id="tab-bible" class="tab-btn">Bible</button>
+          <button id="tab-lyrics" class="tab-btn">Lyrics</button>
+          <button id="tab-bible" class="tab-btn active">Bible</button>
         </div>
 
-        <div id="lyrics-container">
+        <div id="lyrics-container" style="display: none;">
           <!-- Primary -->
           <div class="textarea-group">
             <label for="primary-lyrics">Primary</label>
@@ -62,7 +62,7 @@
           </div>
         </div>
 
-        <div id="bible-container" style="display: none;">
+        <div id="bible-container">
           <div class="textarea-group" style="margin-bottom: 0.75rem;">
             <label for="bible-book">Bible Book</label>
             <div style="display: flex; gap: 0.5rem;">
@@ -96,10 +96,6 @@
 
           <div class="control-row" style="margin-bottom: 1rem;">
             <button id="fetch-bible-btn" class="btn-primary" style="flex: 1; margin-bottom: 0;">Fetch Verses</button>
-            <div style="flex: 0 0 auto; display: flex; align-items: center; gap: 0.5rem; flex-direction: row;">
-              <label for="bible-bg-color" style="color: var(--text-secondary); font-size: 0.875rem;">Background</label>
-              <input type="color" id="bible-bg-color" value="#000000" style="width: 40px; height: 32px; border: none; border-radius: 4px; cursor: pointer;">
-            </div>
           </div>
 
           <div id="saved-verses-grid" class="saved-verses-grid"></div>
