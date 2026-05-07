@@ -41,7 +41,7 @@ async function generatePptx() {
     const isBible = mode === 'bible';
 
     // Remove # from hex color for pptxgenjs
-    const bgColor = isBible ? settings.bibleBackgroundColor.replace('#', '') : settings.backgroundColor.replace('#', '');
+    const bgColor = (isBible ? settings.bibleBackgroundColor : settings.backgroundColor).replace('#', '');
     const alignMode = isBible ? 'left' : 'center';
 
     const primarySettings = isBible ? {
