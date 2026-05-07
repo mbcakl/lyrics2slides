@@ -264,11 +264,9 @@ describe('state module', () => {
 
     it('updates bible-specific settings', () => {
       stateModule.updateSettings({
-        bibleBackgroundColor: '#123456',
         bibleFontFamilyPrimary: 'Arial'
       });
 
-      expect(stateModule.state.settings.bibleBackgroundColor).toBe('#123456');
       expect(stateModule.state.settings.bibleFontFamilyPrimary).toBe('Arial');
     });
 
@@ -284,6 +282,88 @@ describe('state module', () => {
 
       expect(stateModule.state.bibleSelectedBook).toBe('JHN');
       expect(listener).toHaveBeenCalledTimes(1);
+    });
+
+    it('has bibleSecondaryEnable default false', () => {
+      expect(stateModule.state.settings.bibleSecondaryEnable).toBe(false);
+    });
+  });
+
+  describe('persistence', () => {
+    it('initializes mode from localStorage with default bible', async () => {
+      mockGetItem.mockReturnValue(null);
+      vi.resetModules();
+      stateModule = await import('./state.js');
+      expect(stateModule.state.mode).toBe('bible');
+
+      mockGetItem.mockImplementation((key) => {
+        if (key === 'lyrics2slides_mode') return 'lyrics';
+        return null;
+      });
+      vi.resetModules();
+      stateModule = await import('./state.js');
+      expect(stateModule.state.mode).toBe('lyrics');
+    });
+
+    it('initializes settings from localStorage', async () => {
+      const savedSettings = { fontSizePrimary: 100, bibleSecondaryEnable: true };
+      mockGetItem.mockImplementation((key) => {
+        if (key === 'lyrics2slides_settings') return JSON.stringify(savedSettings);
+        return null;
+      });
+      
+      vi.resetModules();
+      stateModule = await import('./state.js');
+      
+      expect(stateModule.state.settings.fontSizePrimary).toBe(100);
+      expect(stateModule.state.settings.bibleSecondaryEnable).toBe(true);
+      // Verify other defaults still exist
+      expect(stateModule.state.settings.backgroundColor).toBe('#000000');
+    });
+
+    it('setMode persists to localStorage', () => {
+      stateModule.setMode('lyrics');
+      expect(mockSetItem).toHaveBeenCalledWith('lyrics2slides_mode', 'lyrics');
+    });
+
+    it('updateSettings persists to localStorage', () => {
+      stateModule.updateSettings({ fontSizePrimary: 80 });
+      const expectedSettings = { ...stateModule.state.settings, fontSizePrimary: 80 };
+      expect(mockSetItem).toHaveBeenCalledWith('lyrics2slides_settings', JSON.stringify(expectedSettings));
+    });
+
+    it('handles corrupted settings JSON gracefully', async () => {
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      mockGetItem.mockImplementation((key) => {
+        if (key === 'lyrics2slides_settings') return 'invalid json';
+        return null;
+      });
+      
+      vi.resetModules();
+      stateModule = await import('./state.js');
+      
+      expect(stateModule.state.settings.fontSizePrimary).toBe(64); // Default
+      expect(consoleSpy).toHaveBeenCalled();
+      consoleSpy.mockRestore();
+    });
+
+    it('handles corrupted saved verses JSON gracefully', async () => {
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      mockGetItem.mockImplementation((key) => {
+        if (key === 'lyrics2slides_saved_verses') return 'invalid json';
+        return null;
+      });
+      
+      vi.resetModules();
+      stateModule = await import('./state.js');
+      
+      expect(stateModule.state.savedVerses).toEqual([]); // Default
+      expect(consoleSpy).toHaveBeenCalled();
+      consoleSpy.mockRestore();
+    });
+
+    it('has default bibleBackgroundColor as #000000', () => {
+      expect(stateModule.state.settings.bibleBackgroundColor).toBe('#000000');
     });
   });
 });

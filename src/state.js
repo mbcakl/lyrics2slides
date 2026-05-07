@@ -1,11 +1,55 @@
 // Application state
-const storedVerses = localStorage.getItem('lyrics2slides_saved_verses');
-const initialSavedVerses = storedVerses ? JSON.parse(storedVerses) : [];
+const VERSES_KEY = 'lyrics2slides_saved_verses';
+const SETTINGS_KEY = 'lyrics2slides_settings';
+const MODE_KEY = 'lyrics2slides_mode';
+
+let initialSavedVerses = [];
+const storedVerses = localStorage.getItem(VERSES_KEY);
+if (storedVerses) {
+  try {
+    initialSavedVerses = JSON.parse(storedVerses);
+  } catch (e) {
+    console.error('Failed to parse saved verses', e);
+  }
+}
+
+let initialSettings = {
+  backgroundColor: '#000000',
+  fontFamilyPrimary: 'Kaiti SC',
+  fontSizePrimary: 64,
+  fontBoldPrimary: true,
+  fontColorPrimary: '#ffff00',
+  fontFamilySecondary: 'Calibri',
+  fontSizeSecondary: 40,
+  fontBoldSecondary: true,
+  fontColorSecondary: '#ffff00',
+  // Bible-specific settings
+  bibleBackgroundColor: '#000000',
+  bibleFontFamilyPrimary: 'Kaiti SC',
+  bibleFontSizePrimary: 40,
+  bibleFontBoldPrimary: true,
+  bibleFontColorPrimary: '#ffff00',
+  bibleFontFamilySecondary: 'Calibri',
+  bibleFontSizeSecondary: 40,
+  bibleFontBoldSecondary: true,
+  bibleFontColorSecondary: '#ffff00',
+  bibleSecondaryEnable: false
+};
+
+const storedSettings = localStorage.getItem(SETTINGS_KEY);
+if (storedSettings) {
+  try {
+    const parsed = JSON.parse(storedSettings);
+    initialSettings = { ...initialSettings, ...parsed };
+  } catch (e) {
+    console.error('Failed to parse settings', e);
+  }
+}
 
 export const state = {
   primaryLyrics: '',
   secondaryLyrics: '',
-  mode: 'lyrics',
+  mode: localStorage.getItem(MODE_KEY) || 'bible',
   bibleSelectedBook: 'GEN',
   biblePrimaryText: '',
   bibleSecondaryText: '',
@@ -16,27 +60,7 @@ export const state = {
   savedVerses: initialSavedVerses,
   slides: [],
   currentSlide: 0,
-  settings: {
-    backgroundColor: '#000000',
-    fontFamilyPrimary: 'Kaiti SC',
-    fontSizePrimary: 64,
-    fontBoldPrimary: true,
-    fontColorPrimary: '#ffff00',
-    fontFamilySecondary: 'Calibri',
-    fontSizeSecondary: 40,
-    fontBoldSecondary: true,
-    fontColorSecondary: '#ffff00',
-    // Bible-specific settings
-    bibleBackgroundColor: '#000000',
-    bibleFontFamilyPrimary: 'Kaiti SC',
-    bibleFontSizePrimary: 40,
-    bibleFontBoldPrimary: true,
-    bibleFontColorPrimary: '#ffff00',
-    bibleFontFamilySecondary: 'Calibri',
-    bibleFontSizeSecondary: 40,
-    bibleFontBoldSecondary: true,
-    bibleFontColorSecondary: '#ffff00'
-  }
+  settings: initialSettings
 };
 
 // Listeners for state changes
@@ -76,6 +100,7 @@ export function setSecondaryLyrics(lyrics) {
 
 export function setMode(mode) {
   state.mode = mode;
+  localStorage.setItem(MODE_KEY, mode);
   notify();
 }
 
@@ -126,19 +151,20 @@ export function addSavedVerse(verse) {
   );
   if (!exists) {
     state.savedVerses.push(verse);
-    localStorage.setItem('lyrics2slides_saved_verses', JSON.stringify(state.savedVerses));
+    localStorage.setItem(VERSES_KEY, JSON.stringify(state.savedVerses));
     notify();
   }
 }
 
 export function removeSavedVerse(id) {
   state.savedVerses = state.savedVerses.filter(v => v.id !== id);
-  localStorage.setItem('lyrics2slides_saved_verses', JSON.stringify(state.savedVerses));
+  localStorage.setItem(VERSES_KEY, JSON.stringify(state.savedVerses));
   notify();
 }
 
 export function updateSettings(updates) {
   Object.assign(state.settings, updates);
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify(state.settings));
   notify();
 }
 
