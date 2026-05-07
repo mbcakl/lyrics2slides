@@ -83,7 +83,7 @@ describe('Bible Saved Verses UI', () => {
     await initBible();
     
     const grid = document.getElementById('saved-verses-grid');
-    const deleteBtn = grid.querySelector('.delete-btn');
+    const deleteBtn = grid.querySelector('.delete-card-btn');
     deleteBtn.click();
     
     expect(state.savedVerses.length).toBe(0);
@@ -97,7 +97,7 @@ describe('Bible Saved Verses UI', () => {
     await initBible();
     
     const grid = document.getElementById('saved-verses-grid');
-    const card = grid.querySelector('.saved-verse-card');
+    const card = grid.querySelector('.verse-card');
     
     const fetchBtn = document.getElementById('fetch-bible-btn');
     const fetchSpy = vi.spyOn(fetchBtn, 'click');

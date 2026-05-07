@@ -63,7 +63,7 @@
         </div>
 
         <div id="bible-container" style="display: none;">
-          <div class="textarea-group" style="margin-bottom: 1rem;">
+          <div class="textarea-group" style="margin-bottom: 0.75rem;">
             <label for="bible-book">Bible Book</label>
             <div style="display: flex; gap: 0.5rem;">
               <button id="bible-book-btn" class="text-input" style="flex: 1; text-align: left;">创世记 Genesis</button>
@@ -72,35 +72,37 @@
             </div>
           </div>
           
-          <div class="textarea-group" style="margin-bottom: 1rem;">
-            <label for="bible-translation-primary">Primary Translation</label>
-            <select id="bible-translation-primary" class="text-input">
-              <option value="CUNPSS-神" selected>CUNPSS (The Chinese Union Version)</option>
-              <option value="NIV">NIV (New International Version)</option>
-              <option value="KJV">KJV (King James Version)</option>
-            </select>
+          <div class="control-row">
+            <div class="textarea-group" style="margin-bottom: 0;">
+              <label for="bible-translation-primary">Primary</label>
+              <select id="bible-translation-primary" class="text-input">
+                <option value="CUNPSS-神" selected>CUNPSS (The Chinese Union Version)</option>
+                <option value="NIV">NIV (New International Version)</option>
+                <option value="KJV">KJV (King James Version)</option>
+              </select>
+            </div>
+
+            <div class="textarea-group" style="margin-bottom: 0;">
+              <label style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-secondary);">
+                <input type="checkbox" id="bible-secondary-enable"> Secondary
+              </label>
+              <select id="bible-translation-secondary" class="text-input" disabled>
+                <option value="NIV">NIV (New International Version)</option>
+                <option value="CUNPSS-神">CUNPSS (The Chinese Union Version)</option>
+                <option value="KJV" selected>KJV (King James Version)</option>
+              </select>
+            </div>
           </div>
 
-          <div class="textarea-group" style="margin-bottom: 1rem;">
-            <label style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-primary);">
-              <input type="checkbox" id="bible-secondary-enable"> Enable Secondary Translation
-            </label>
-            <select id="bible-translation-secondary" class="text-input" disabled>
-              <option value="NIV">NIV (New International Version)</option>
-              <option value="CUNPSS-神">CUNPSS (The Chinese Union Version)</option>
-              <option value="KJV" selected>KJV (King James Version)</option>
-            </select>
+          <div class="control-row" style="margin-bottom: 1rem;">
+            <button id="fetch-bible-btn" class="btn-primary" style="flex: 1; margin-bottom: 0;">Fetch Verses</button>
+            <div style="flex: 0 0 auto; display: flex; align-items: center; gap: 0.5rem; flex-direction: row;">
+              <label for="bible-bg-color" style="color: var(--text-secondary); font-size: 0.875rem;">Background</label>
+              <input type="color" id="bible-bg-color" value="#000000" style="width: 40px; height: 32px; border: none; border-radius: 4px; cursor: pointer;">
+            </div>
           </div>
 
-          <button id="fetch-bible-btn" class="btn-primary" style="margin-bottom: 1rem; width: 100%;">Fetch Verses</button>
-
-          <!-- New Container -->
           <div id="saved-verses-grid" class="saved-verses-grid"></div>
-
-          <div class="header-controls" style="margin-bottom: 1rem; justify-content: flex-start;">
-            <label for="bible-bg-color">Bible Background</label>
-            <input type="color" id="bible-bg-color" value="#000000">
-          </div>
 
           <div class="textarea-group">
             <label for="bible-primary-text">Primary Verses (Editable)</label>
