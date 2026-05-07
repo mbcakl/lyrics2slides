@@ -1,11 +1,23 @@
-import { updateSettings } from './state.js';
+import { state, updateSettings, subscribe } from './state.js';
 import { clampFontSize } from './validation.js';
 
 export function initControls() {
   // Background color
   const bgColor = document.getElementById('bg-color');
   bgColor.addEventListener('input', (e) => {
-    updateSettings({ backgroundColor: e.target.value });
+    if (state.mode === 'bible') {
+      updateSettings({ bibleBackgroundColor: e.target.value });
+    } else {
+      updateSettings({ backgroundColor: e.target.value });
+    }
+  });
+
+  // Keep bg-color input in sync with state
+  subscribe((newState) => {
+    const currentBg = newState.mode === 'bible' ? newState.settings.bibleBackgroundColor : newState.settings.backgroundColor;
+    if (bgColor.value !== currentBg) {
+      bgColor.value = currentBg;
+    }
   });
 
   // Primary font settings
@@ -69,12 +81,6 @@ export function initControls() {
     updateSettings({ fontBoldSecondary: e.target.checked });
   });
 
-  // Bible Settings
-  const bibleBgColor = document.getElementById('bible-bg-color');
-  bibleBgColor.addEventListener('input', (e) => {
-    updateSettings({ bibleBackgroundColor: e.target.value });
-  });
-
   // Bible Primary Font
   const bibleFontPrimary = document.getElementById('bible-font-primary');
   const bibleSizePrimary = document.getElementById('bible-size-primary');
@@ -120,4 +126,43 @@ export function initControls() {
   bibleBoldSecondary.addEventListener('change', (e) => {
     updateSettings({ bibleFontBoldSecondary: e.target.checked });
   });
+
+  // Sync controls with state on load
+  syncControlsWithState();
+}
+
+export function syncControlsWithState() {
+  const s = state.settings;
+  
+  // Background
+  const bgColor = document.getElementById('bg-color');
+  if (bgColor) bgColor.value = s.backgroundColor;
+  
+  // Primary
+  document.getElementById('font-primary').value = s.fontFamilyPrimary;
+  document.getElementById('size-primary').value = s.fontSizePrimary;
+  document.getElementById('color-primary').value = s.fontColorPrimary;
+  document.getElementById('bold-primary').checked = s.fontBoldPrimary;
+  
+  // Secondary
+  document.getElementById('font-secondary').value = s.fontFamilySecondary;
+  document.getElementById('size-secondary').value = s.fontSizeSecondary;
+  document.getElementById('color-secondary').value = s.fontColorSecondary;
+  document.getElementById('bold-secondary').checked = s.fontBoldSecondary;
+  
+  // Bible
+  const bibleBgColor = document.getElementById('bible-bg-color');
+  if (bibleBgColor) bibleBgColor.value = s.bibleBackgroundColor;
+  
+  document.getElementById('bible-font-primary').value = s.bibleFontFamilyPrimary;
+  document.getElementById('bible-size-primary').value = s.bibleFontSizePrimary;
+  document.getElementById('bible-color-primary').value = s.bibleFontColorPrimary;
+  document.getElementById('bible-bold-primary').checked = s.bibleFontBoldPrimary;
+  
+  document.getElementById('bible-font-secondary').value = s.bibleFontFamilySecondary;
+  document.getElementById('bible-size-secondary').value = s.bibleFontSizeSecondary;
+  document.getElementById('bible-color-secondary').value = s.bibleFontColorSecondary;
+  document.getElementById('bible-bold-secondary').checked = s.bibleFontBoldSecondary;
+  
+  document.getElementById('bible-secondary-enable').checked = s.bibleSecondaryEnable;
 }
