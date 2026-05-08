@@ -3,14 +3,27 @@ import { initBible } from './bible.js';
 import { state, addSavedVerse, removeSavedVerse } from './state.js';
 
 // Mock sql.js
+const prepareSpy = vi.fn().mockReturnValue({
+  bind: vi.fn(),
+  step: vi.fn().mockReturnValue(false),
+  getAsObject: vi.fn(),
+  free: vi.fn()
+});
+
 vi.mock('sql.js', () => ({
   default: vi.fn().mockResolvedValue({
-    Database: vi.fn().mockImplementation(() => ({
-      prepare: vi.fn(),
-      close: vi.fn()
-    }))
+    Database: class {
+      constructor() {}
+      prepare(...args) { return prepareSpy(...args); }
+      close() {}
+    }
   })
 }));
+
+global.fetch = vi.fn().mockResolvedValue({
+  ok: true,
+  arrayBuffer: vi.fn().mockResolvedValue(new ArrayBuffer(0))
+});
 
 describe('Bible Saved Verses UI', () => {
   beforeEach(() => {
@@ -109,5 +122,8 @@ describe('Bible Saved Verses UI', () => {
     expect(document.getElementById('bible-translation-primary').value).toBe('NIV');
     expect(document.getElementById('bible-translation-secondary').value).toBe('CUNPSS-神');
     expect(document.getElementById('bible-secondary-enable').checked).toBe(true);
+    
+    // Verify that the fetch was triggered (db.prepare called)
+    expect(prepareSpy).toHaveBeenCalled();
   });
 });
