@@ -64,11 +64,16 @@
 
         <div id="bible-container">
           <div class="textarea-group" style="margin-bottom: 0.75rem;">
-            <label for="bible-book">Bible Book</label>
-            <div style="display: flex; gap: 0.5rem;">
-              <button id="bible-book-btn" class="text-input" style="flex: 1; text-align: left;">创世记 Genesis</button>
-              <input type="text" id="bible-chapter-verse" placeholder="e.g., 3:1-16" class="text-input" style="flex: 1;">
+            <label for="bible-smart-input">Search Book & Verse</label>
+            <div style="display: flex; gap: 0.5rem; position: relative;">
+              <input type="text" id="bible-smart-input" placeholder="e.g., csj 3:16, John 1:1" class="text-input" style="flex: 1;" autocomplete="off">
+              <button id="bible-book-picker-btn" class="btn-secondary" style="padding: 0.5rem 1rem;" title="Open Book Picker">🗂️</button>
               <button id="save-bible-btn" class="btn-secondary" style="padding: 0.5rem 1rem;" title="Save to Quick Access">💾</button>
+              
+              <!-- Autocomplete Dropdown -->
+              <div id="bible-autocomplete-dropdown" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 4px; max-height: 200px; overflow-y: auto; z-index: 10; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                <!-- Items will be injected here -->
+              </div>
             </div>
           </div>
           
@@ -92,10 +97,6 @@
                 <option value="KJV" selected>KJV (King James Version)</option>
               </select>
             </div>
-          </div>
-
-          <div class="control-row" style="margin-bottom: 1rem;">
-            <button id="fetch-bible-btn" class="btn-primary" style="flex: 1; margin-bottom: 0;">Fetch Verses</button>
           </div>
 
           <div id="saved-verses-grid" class="saved-verses-grid"></div>

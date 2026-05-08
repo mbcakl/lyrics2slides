@@ -19,8 +19,9 @@ describe('Bible Saved Verses UI', () => {
       <button id="tab-bible"></button>
       <div id="lyrics-container"></div>
       <div id="bible-container">
-        <button id="bible-book-btn"></button>
-        <input id="bible-chapter-verse" value="">
+        <input id="bible-smart-input" value="">
+        <button id="bible-book-picker-btn"></button>
+        <div id="bible-autocomplete-dropdown"></div>
         <button id="save-bible-btn"></button>
         <select id="bible-translation-primary">
           <option value="CUNPSS-神">CUNPSS</option>
@@ -31,7 +32,6 @@ describe('Bible Saved Verses UI', () => {
           <option value="NIV">NIV</option>
           <option value="CUNPSS-神">CUNPSS</option>
         </select>
-        <button id="fetch-bible-btn"></button>
         <div id="saved-verses-grid"></div>
         <div id="bible-secondary-group"></div>
         <textarea id="bible-primary-text"></textarea>
@@ -64,8 +64,10 @@ describe('Bible Saved Verses UI', () => {
   it('adds a verse to state when save button is clicked', async () => {
     await initBible();
     
-    const input = document.getElementById('bible-chapter-verse');
-    input.value = '3:16';
+    // We mock that GEN is currently selected in state or smartInput parses it
+    state.bibleSelectedBook = 'GEN';
+    const input = document.getElementById('bible-smart-input');
+    input.value = 'GEN 3:16';
     
     const saveBtn = document.getElementById('save-bible-btn');
     saveBtn.click();
@@ -99,16 +101,13 @@ describe('Bible Saved Verses UI', () => {
     const grid = document.getElementById('saved-verses-grid');
     const card = grid.querySelector('.verse-card');
     
-    const fetchBtn = document.getElementById('fetch-bible-btn');
-    const fetchSpy = vi.spyOn(fetchBtn, 'click');
-    
     card.click();
     
     expect(state.bibleSelectedBook).toBe('JHN');
-    expect(document.getElementById('bible-chapter-verse').value).toBe('3:16');
+    // It should load into smartInput based on our mocked implementation for tests
+    expect(document.getElementById('bible-smart-input').value).toContain('3:16');
     expect(document.getElementById('bible-translation-primary').value).toBe('NIV');
     expect(document.getElementById('bible-translation-secondary').value).toBe('CUNPSS-神');
     expect(document.getElementById('bible-secondary-enable').checked).toBe(true);
-    expect(fetchSpy).toHaveBeenCalled();
   });
 });
