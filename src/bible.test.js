@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { toSuperscript, reSplitBible, parseReference } from './bible.js';
+import { toSuperscript, reSplitBible, parseReference, matchBook } from './bible.js';
 import { dynamicSplit } from './dynamicSplitter.js';
 import { state, setMode, setBiblePrimaryVerses, setSlides } from './state.js';
 
@@ -18,6 +18,28 @@ describe('Bible utilities', () => {
       expect(toSuperscript('1')).toBe('¹');
       expect(toSuperscript('12')).toBe('¹²');
       expect(toSuperscript('0')).toBe('⁰');
+    });
+  });
+
+  describe('matchBook', () => {
+    it('matches by English prefix', () => {
+      const matches = matchBook('Gen');
+      expect(matches[0].code).toBe('GEN');
+    });
+    it('matches by Chinese prefix', () => {
+      const matches = matchBook('创');
+      expect(matches[0].code).toBe('GEN');
+    });
+    it('matches by Pinyin initials', () => {
+      const matches = matchBook('csj');
+      expect(matches[0].code).toBe('GEN');
+    });
+    it('matches by exact code', () => {
+      const matches = matchBook('GEN');
+      expect(matches[0].code).toBe('GEN');
+    });
+    it('returns empty array for no match', () => {
+      expect(matchBook('xyzxyz')).toEqual([]);
     });
   });
 

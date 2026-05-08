@@ -43,7 +43,7 @@ const bookMap = {
   // Chinese names mapping
   '创世记': 'GEN', '出埃及记': 'EXO', '利未记': 'LEV', '民数记': 'NUM', '申命记': 'DEU',
   '约书亚记': 'JOS', '士师记': 'JDG', '路得记': 'RUT', '撒母耳记上': '1SA', '撒母耳记下': '2SA',
-  '列王纪上': '1KI', '列王纪下': '2KI', '历代志上': '1CH', '历代志下': '2CH', '拉结记': 'EZR',
+  '列王纪上': '1KI', '列王纪下': '2KI', '历代志上': '1CH', '历代志下': '2CH', '以斯拉记': 'EZR',
   '尼希米记': 'NEH', '以斯帖记': 'EST', '约伯记': 'JOB', '诗篇': 'PSA', '箴言': 'PRO',
   '传道书': 'ECC', '雅歌': 'SNG', '以赛亚书': 'ISA', '耶利米书': 'JER', '耶利米哀歌': 'LAM',
   '以西结书': 'EZK', '但以理书': 'DAN', '何西阿书': 'HOS', '约珥书': 'JOL', '阿摩司书': 'AMO',
@@ -135,6 +135,25 @@ const otBooks = [
 
 export function toSuperscript(numStr) {
   return String(numStr).split('').map(c => superscriptMap[c] || c).join('');
+}
+
+export function matchBook(query) {
+  if (!query) return [];
+  const q = query.toLowerCase();
+  const results = [];
+
+  Object.entries(bookNamesMap).forEach(([code, names]) => {
+    if (
+      code.toLowerCase() === q ||
+      names.en.toLowerCase().startsWith(q) ||
+      names.zh.startsWith(q) ||
+      names.pinyin.startsWith(q)
+    ) {
+      results.push({ code, ...names });
+    }
+  });
+
+  return results;
 }
 
 export async function initBible() {
