@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { toSuperscript, reSplitBible, parseReference, matchBook } from './bible.js';
+import { toSuperscript, reSplitBible, parseReference, matchBook, parseSmartInput } from './bible.js';
 import { dynamicSplit } from './dynamicSplitter.js';
 import { state, setMode, setBiblePrimaryVerses, setSlides } from './state.js';
 
@@ -11,6 +11,25 @@ describe('Bible utilities', () => {
         <div class="secondary-measure"></div>
       </div>
     `;
+  });
+
+  describe('parseSmartInput', () => {
+    it('handles book and reference', () => {
+      expect(parseSmartInput('Genesis 1:1')).toEqual({ bookQuery: 'Genesis', reference: '1:1' });
+    });
+    it('handles books with numbers', () => {
+      expect(parseSmartInput('1 John 3:16')).toEqual({ bookQuery: '1 John', reference: '3:16' });
+    });
+    it('handles multiple word books', () => {
+      expect(parseSmartInput('Song of Solomon 1:1')).toEqual({ bookQuery: 'Song of Solomon', reference: '1:1' });
+    });
+    it('handles chapter only fallback', () => {
+      expect(parseSmartInput('3:16')).toEqual({ bookQuery: '', reference: '3:16' });
+    });
+    it('returns empty for falsy input', () => {
+      expect(parseSmartInput('')).toEqual({ bookQuery: '', reference: '' });
+      expect(parseSmartInput(null)).toEqual({ bookQuery: '', reference: '' });
+    });
   });
 
   describe('toSuperscript', () => {

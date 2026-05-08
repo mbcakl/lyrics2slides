@@ -156,6 +156,22 @@ export function matchBook(query) {
   return results;
 }
 
+export function parseSmartInput(input) {
+  if (!input) return { bookQuery: '', reference: '' };
+  const val = input.trim();
+  const match = val.match(/^(.+?)\s+(\d.*)$/);
+  if (match) {
+    return { bookQuery: match[1].trim(), reference: match[2].trim() };
+  }
+  return { bookQuery: '', reference: val };
+}
+
+export function showInputError(element) {
+  if (!element) return;
+  element.style.border = '1px solid red';
+  setTimeout(() => element.style.border = '', 1000);
+}
+
 export async function initBible() {
   try {
     const SQL = await initSqlJs({
@@ -299,9 +315,8 @@ export async function initBible() {
     const bookCode = state.bibleSelectedBook;
     let reference = '';
     if (smartInput) {
-      const val = smartInput.value.trim();
-      const match = val.match(/^(.+?)\s+(\d.*)$/);
-      reference = match ? match[2].trim() : val;
+      const { reference: parsedRef } = parseSmartInput(smartInput.value);
+      reference = parsedRef;
     }
     
     if (!reference) return;
@@ -441,24 +456,19 @@ export async function initBible() {
   });
 
   function executeFetch() {
-    const val = smartInput.value.trim();
-    // Try to parse using a regex that splits book name and reference
-    const match = val.match(/^(.+?)\s+(\d.*)$/);
+    const val = smartInput.value;
+    const { bookQuery, reference: cvStr } = parseSmartInput(val);
     
     let bookCode = state.bibleSelectedBook;
-    let cvStr = val;
 
-    if (match) {
-       const bookQuery = match[1].trim();
-       cvStr = match[2].trim();
+    if (bookQuery) {
        const possibleBooks = matchBook(bookQuery);
        if (possibleBooks.length > 0) {
          bookCode = possibleBooks[0].code;
          state.bibleSelectedBook = bookCode;
        } else {
          // explicit visual feedback for book not found
-         smartInput.style.border = '1px solid red';
-         setTimeout(() => smartInput.style.border = '', 1000);
+         showInputError(smartInput);
          return;
        }
     }
@@ -468,8 +478,7 @@ export async function initBible() {
     const ref = parseReference(bookCode, cvStr);
     if (!ref) {
       // visual feedback
-      smartInput.style.border = '1px solid red';
-      setTimeout(() => smartInput.style.border = '', 1000);
+      showInputError(smartInput);
       return;
     }
 
