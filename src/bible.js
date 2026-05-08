@@ -299,8 +299,9 @@ export async function initBible() {
     const bookCode = state.bibleSelectedBook;
     let reference = '';
     if (smartInput) {
-      const parts = smartInput.value.trim().split(/\s+/);
-      reference = parts.length > 1 ? parts[1] : parts[0];
+      const val = smartInput.value.trim();
+      const match = val.match(/^(.+?)\s+(\d.*)$/);
+      reference = match ? match[2].trim() : val;
     }
     
     if (!reference) return;
@@ -319,11 +320,11 @@ export async function initBible() {
 
   smartInput.addEventListener('input', (e) => {
     const val = e.target.value;
-    const bookPartMatch = val.match(/^([a-zA-Z\u4e00-\u9fa5]+)\s*/);
-    const hasNumbers = /\d/.test(val);
+    const bookPartMatch = val.match(/^([a-zA-Z\u4e00-\u9fa50-9\s]+?)(?:\s\d|$)/);
+    const hasChapter = /\s\d/.test(val);
 
-    if (bookPartMatch && !hasNumbers) {
-      const query = bookPartMatch[1];
+    if (bookPartMatch && !hasChapter) {
+      const query = bookPartMatch[1].trim();
       currentMatches = matchBook(query).slice(0, 5); // top 5
       
       if (currentMatches.length > 0) {
@@ -439,10 +440,10 @@ export async function initBible() {
     updateSlidesFromMode();
   });
 
-  async function executeFetch() {
+  function executeFetch() {
     const val = smartInput.value.trim();
     // Try to parse using a regex that splits book name and reference
-    const match = val.match(/^([a-zA-Z\u4e00-\u9fa5\s]+)\s+(\d.*)$/);
+    const match = val.match(/^(.+?)\s+(\d.*)$/);
     
     let bookCode = state.bibleSelectedBook;
     let cvStr = val;
@@ -454,6 +455,11 @@ export async function initBible() {
        if (possibleBooks.length > 0) {
          bookCode = possibleBooks[0].code;
          state.bibleSelectedBook = bookCode;
+       } else {
+         // explicit visual feedback for book not found
+         smartInput.style.border = '1px solid red';
+         setTimeout(() => smartInput.style.border = '', 1000);
+         return;
        }
     }
 
