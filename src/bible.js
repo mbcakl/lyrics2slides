@@ -191,6 +191,7 @@ export async function initBible() {
   const saveBtn = document.getElementById('save-bible-btn');
   const savedVersesGrid = document.getElementById('saved-verses-grid');
   const primaryTrans = document.getElementById('bible-translation-primary');
+  const smartInput = document.getElementById('bible-smart-input');
 
   function updateSlidesFromMode() {
     if (state.mode === 'lyrics') {
@@ -231,7 +232,7 @@ export async function initBible() {
 
   function updateBookButton() {
     const names = bookNamesMap[state.bibleSelectedBook];
-    bookBtn.textContent = `${names.zh} ${names.en}`;
+    if (bookBtn) bookBtn.textContent = `${names.zh} ${names.en}`;
   }
 
   function renderSavedVerses() {
@@ -262,7 +263,12 @@ export async function initBible() {
         // Load saved verse
         setBibleSelectedBook(v.book);
         updateBookButton();
-        chapterVerseInput.value = v.reference;
+        if (chapterVerseInput) {
+          chapterVerseInput.value = v.reference;
+        } else if (smartInput) {
+          const bookNames = bookNamesMap[v.book];
+          smartInput.value = `${bookNames.pinyin} ${v.reference}`;
+        }
         primaryTrans.value = v.pVersion;
         secTrans.value = v.sVersion;
         secEnable.checked = v.sEnabled;
@@ -277,41 +283,54 @@ export async function initBible() {
           secGroup.style.pointerEvents = 'auto';
         }
 
-        fetchBtn.click();
+        if (fetchBtn) fetchBtn.click();
       };
 
       savedVersesGrid.appendChild(card);
     });
   }
 
-  bookBtn.onclick = (e) => {
-    e.preventDefault();
-    populateGrids();
-    pickerDialog.showModal();
-  };
-
-  closePickerBtn.onclick = (e) => {
-    e.preventDefault();
-    pickerDialog.close();
-  };
-
-  saveBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    const bookCode = state.bibleSelectedBook;
-    const reference = chapterVerseInput.value.trim();
-    if (!reference) return;
-
-    const verse = {
-      id: Date.now(),
-      book: bookCode,
-      reference,
-      pVersion: primaryTrans.value,
-      sVersion: secTrans.value,
-      sEnabled: secEnable.checked
+  if (bookBtn) {
+    bookBtn.onclick = (e) => {
+      e.preventDefault();
+      populateGrids();
+      pickerDialog.showModal();
     };
+  }
 
-    addSavedVerse(verse);
-  });
+  if (closePickerBtn) {
+    closePickerBtn.onclick = (e) => {
+      e.preventDefault();
+      pickerDialog.close();
+    };
+  }
+
+  if (saveBtn) {
+    saveBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const bookCode = state.bibleSelectedBook;
+      let reference = '';
+      if (chapterVerseInput) {
+        reference = chapterVerseInput.value.trim();
+      } else if (smartInput) {
+        const parts = smartInput.value.split(' ');
+        reference = parts.length > 1 ? parts[1] : parts[0];
+      }
+      
+      if (!reference) return;
+
+      const verse = {
+        id: Date.now(),
+        book: bookCode,
+        reference,
+        pVersion: primaryTrans.value,
+        sVersion: secTrans.value,
+        sEnabled: secEnable.checked
+      };
+
+      addSavedVerse(verse);
+    });
+  }
 
   updateBookButton();
 
@@ -364,10 +383,18 @@ export async function initBible() {
     updateSlidesFromMode();
   });
 
-  fetchBtn.addEventListener('click', async () => {
-    const bookCode = state.bibleSelectedBook;
-    const cvStr = chapterVerseInput.value.trim();
-    if (!cvStr || !db) return;
+  if (fetchBtn) {
+    fetchBtn.addEventListener('click', async () => {
+      const bookCode = state.bibleSelectedBook;
+      let cvStr = '';
+      if (chapterVerseInput) {
+        cvStr = chapterVerseInput.value.trim();
+      } else if (smartInput) {
+        const parts = smartInput.value.trim().split(/\s+/);
+        cvStr = parts.length > 1 ? parts[1] : parts[0];
+      }
+      
+      if (!cvStr || !db) return;
 
     const ref = parseReference(bookCode, cvStr);
     if (!ref) {
@@ -421,6 +448,7 @@ export async function initBible() {
     setBibleSecondaryReference(sRef);
     setSlides(slides);
   });
+  }
 
   let lastSettings = JSON.stringify(state.settings);
   subscribe((newState) => {
