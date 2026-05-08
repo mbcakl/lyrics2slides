@@ -665,3 +665,8 @@ kbd {
   background: #ef4444;
   color: white;
 }
+
+/* Autocomplete Hover */
+#bible-autocomplete-dropdown .autocomplete-item:hover {
+  background: var(--bg-hover, #333) !important;
+}
