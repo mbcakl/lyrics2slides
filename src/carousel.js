@@ -1,4 +1,5 @@
 import { renderSlide } from './renderer.js';
+import { state, subscribe, setState } from './state.js';
 
 let lastSlides = null;
 let lastSettings = null;
@@ -66,4 +67,33 @@ export function updateCarousel(container, state, onThumbnailClick) {
       onThumbnailClick(parseInt(thumb.dataset.index, 10));
     }
   };
+}
+
+export function initCarousel() {
+  const container = document.getElementById('slide-carousel');
+  if (!container) return;
+
+  // Render on state change
+  subscribe((currentState) => {
+    updateCarousel(container, currentState, (index) => {
+      setState({ currentSlide: index });
+    });
+
+    // Auto-scroll logic
+    const activeThumb = container.querySelector('.carousel-thumbnail.active');
+    if (activeThumb) {
+      const containerRect = container.getBoundingClientRect();
+      const thumbRect = activeThumb.getBoundingClientRect();
+      
+      // If thumbnail is out of view, scroll it into view
+      if (thumbRect.left < containerRect.left || thumbRect.right > containerRect.right) {
+        activeThumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      }
+    }
+  });
+
+  // Initial render
+  updateCarousel(container, state, (index) => {
+    setState({ currentSlide: index });
+  });
 }
