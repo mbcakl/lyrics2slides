@@ -33,6 +33,7 @@ describe('Bible Saved Verses UI', () => {
       <div id="lyrics-container"></div>
       <div id="bible-container">
         <input id="bible-smart-input" value="">
+        <button id="bible-search-btn"></button>
         <button id="bible-book-picker-btn"></button>
         <div id="bible-autocomplete-dropdown"></div>
         <button id="save-bible-btn"></button>

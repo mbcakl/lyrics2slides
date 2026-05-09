@@ -206,6 +206,7 @@ export async function initBible() {
   const primaryTrans = document.getElementById('bible-translation-primary');
   const smartInput = document.getElementById('bible-smart-input');
   const autocompleteDropdown = document.getElementById('bible-autocomplete-dropdown');
+  const searchBtn = document.getElementById('bible-search-btn');
   const pickerBtn = document.getElementById('bible-book-picker-btn');
   let highlightedIndex = -1;
   let currentMatches = [];
@@ -320,6 +321,11 @@ export async function initBible() {
       savedVersesGrid.appendChild(card);
     });
   }
+
+  searchBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    executeFetch();
+  });
 
   pickerBtn.addEventListener('click', () => {
     populateGrids();
