@@ -62,6 +62,37 @@ body {
   cursor: pointer;
 }
 
+/* Header Help Popover */
+.header-help {
+  position: relative;
+  display: inline-block;
+}
+
+.header-help summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 4px;
+}
+
+.header-help summary::-webkit-details-marker {
+  display: none;
+}
+
+.help-popover {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 0.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1rem;
+  width: 250px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  z-index: 100;
+}
+
 .btn-primary {
   padding: 0.75rem 1.5rem;
   background: var(--accent);
@@ -347,11 +378,7 @@ body {
 
 /* Quick Start Guide */
 .quick-start {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 0.75rem 1rem;
-  margin-top: 0.5rem;
+  display: none;
 }
 
 .quick-start-title {
@@ -669,4 +696,51 @@ kbd {
 /* Autocomplete Hover */
 #bible-autocomplete-dropdown .autocomplete-item:hover {
   background: var(--bg-hover, #333) !important;
+}
+
+/* Slide Carousel */
+.slide-carousel {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding: 0.5rem 0;
+  min-height: 80px;
+  scroll-behavior: smooth;
+}
+
+.slide-carousel::-webkit-scrollbar {
+  height: 6px;
+}
+
+.slide-carousel::-webkit-scrollbar-thumb {
+  background-color: var(--border-color);
+  border-radius: 3px;
+}
+
+.carousel-thumbnail {
+  flex: 0 0 auto;
+  height: 64px;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  opacity: 0.6;
+  transition: opacity 0.2s, border-color 0.2s;
+}
+
+.carousel-thumbnail:hover {
+  opacity: 0.8;
+}
+
+.carousel-thumbnail.active {
+  border-color: var(--accent);
+  opacity: 1;
+}
+
+.carousel-thumbnail .slide-content {
+  transform-origin: top left;
+  /* The scaling will be applied dynamically via JS based on height */
 }
