@@ -14,6 +14,17 @@
       <div class="header-controls">
         <label for="bg-color">Background</label>
         <input type="color" id="bg-color" value="#000000" aria-label="Slide background color">
+        <details class="header-help">
+          <summary class="btn-secondary" aria-label="Help">ℹ️</summary>
+          <div class="help-popover">
+            <div class="quick-start-title">Quick Start</div>
+            <ul class="quick-start-tips">
+              <li>Separate slides with <strong>blank lines</strong></li>
+              <li>Primary & Secondary lyrics pair by section order</li>
+              <li><kbd>&larr;</kbd> <kbd>&rarr;</kbd> Navigate slides</li>
+            </ul>
+          </div>
+        </details>
         <button id="present-btn" class="btn-secondary">Present</button>
         <button id="download-btn" class="btn-primary">Download PPTX</button>
       </div>
@@ -140,14 +151,7 @@
           <span id="slide-counter" role="status" aria-live="polite">0 / 0</span>
           <button id="next-btn" class="nav-btn" aria-label="Next slide">&gt;</button>
         </div>
-        <div class="quick-start">
-          <div class="quick-start-title">Quick Start</div>
-          <ul class="quick-start-tips">
-            <li>Separate slides with <strong>blank lines</strong></li>
-            <li>Primary & Secondary lyrics pair by section order</li>
-            <li><kbd>&larr;</kbd> <kbd>&rarr;</kbd> Navigate slides</li>
-          </ul>
-        </div>
+        <div id="slide-carousel" class="slide-carousel"></div>
       </section>
     </main>
 
