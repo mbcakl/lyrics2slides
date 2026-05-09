@@ -210,6 +210,26 @@ export async function initBible() {
   let highlightedIndex = -1;
   let currentMatches = [];
 
+  function getFormattedBookName(code, names) {
+    if (!names) names = bookNamesMap[code];
+    if (!names) return '';
+    
+    const pVersion = primaryTrans.value;
+    const sVersion = secEnable.checked ? secTrans.value : null;
+
+    const pName = pVersion === 'CUNPSS-神' ? names.zh : names.en;
+    let sName = '';
+    
+    if (sVersion) {
+      sName = sVersion === 'CUNPSS-神' ? names.zh : names.en;
+    }
+
+    if (sName && sName !== pName) {
+      return `${pName}(${sName})`;
+    }
+    return pName;
+  }
+
   function updateSlidesFromMode() {
     if (state.mode === 'lyrics') {
       setSlides(parseLyrics(state.primaryLyrics, state.secondaryLyrics));
@@ -236,7 +256,7 @@ export async function initBible() {
         e.preventDefault(); // Prevent any default behavior
         setBibleSelectedBook(code);
         pickerDialog.close();
-        smartInput.value = `${names.en} `;
+        smartInput.value = `${getFormattedBookName(code, names)} `;
         smartInput.focus();
       };
       
@@ -276,9 +296,6 @@ export async function initBible() {
         // Load saved verse
         setBibleSelectedBook(v.book);
         const bookNames = bookNamesMap[v.book];
-        if (smartInput) {
-          smartInput.value = `${bookNames.pinyin} ${v.reference}`;
-        }
         primaryTrans.value = v.pVersion;
         secTrans.value = v.sVersion;
         secEnable.checked = v.sEnabled;
@@ -291,6 +308,10 @@ export async function initBible() {
         } else {
           secGroup.style.opacity = '1';
           secGroup.style.pointerEvents = 'auto';
+        }
+
+        if (smartInput) {
+          smartInput.value = `${getFormattedBookName(v.book, bookNames)} ${v.reference}`;
         }
 
         executeFetch();
@@ -385,7 +406,7 @@ export async function initBible() {
 
   function selectMatch(match) {
     state.bibleSelectedBook = match.code;
-    smartInput.value = `${match.en} `;
+    smartInput.value = `${getFormattedBookName(match.code, match)} `;
     autocompleteDropdown.style.display = 'none';
     highlightedIndex = -1;
     smartInput.focus();
@@ -462,7 +483,9 @@ export async function initBible() {
     let bookCode = state.bibleSelectedBook;
 
     if (bookQuery) {
-       const possibleBooks = matchBook(bookQuery);
+       // Clean the bookQuery to ignore anything in parentheses for matching
+       const cleanQuery = bookQuery.replace(/\s*\(.*?\)\s*/, '').trim();
+       const possibleBooks = matchBook(cleanQuery);
        if (possibleBooks.length > 0) {
          bookCode = possibleBooks[0].code;
          state.bibleSelectedBook = bookCode;
