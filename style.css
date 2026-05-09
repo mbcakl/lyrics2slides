@@ -149,6 +149,7 @@ body {
   gap: 1rem;
   overflow-y: auto;
   min-height: 0;
+  min-width: 0;
 }
 
 .textarea-group {
@@ -264,6 +265,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  min-width: 0;
 }
 
 .slide-preview {
@@ -709,6 +711,8 @@ kbd {
   padding: 0.5rem 0;
   min-height: 80px;
   scroll-behavior: smooth;
+  width: 100%;
+  max-width: 100%;
 }
 
 .slide-carousel::-webkit-scrollbar {
