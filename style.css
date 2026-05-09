@@ -12,6 +12,9 @@
   --text-secondary: #aaa;
   --accent: #4a90d9;
   --border: #333;
+  --surface: #1e1e3a;
+  --border-color: #333;
+  --bg-hover: #2a2a4a;
 }
 
 body {

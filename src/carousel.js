@@ -1,5 +1,5 @@
 import { renderSlide } from './renderer.js';
-import { state, subscribe, setState } from './state.js';
+import { state, subscribe, setCurrentSlide } from './state.js';
 
 let lastSlides = null;
 let lastSettings = null;
@@ -76,7 +76,7 @@ export function initCarousel() {
   // Render on state change
   subscribe((currentState) => {
     updateCarousel(container, currentState, (index) => {
-      setState({ currentSlide: index });
+      setCurrentSlide(index);
     });
 
     // Auto-scroll logic
@@ -94,6 +94,6 @@ export function initCarousel() {
 
   // Initial render
   updateCarousel(container, state, (index) => {
-    setState({ currentSlide: index });
+    setCurrentSlide(index);
   });
 }
