@@ -77,7 +77,7 @@ export function initCarousel() {
   container.addEventListener('wheel', (e) => {
     if (e.deltaY !== 0) {
       e.preventDefault();
-      container.scrollLeft += e.deltaY;
+      container.scrollLeft += e.deltaY * 1.5; // Increased speed multiplier
     }
   }, { passive: false });
 
