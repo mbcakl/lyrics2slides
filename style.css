@@ -709,7 +709,7 @@ kbd {
   gap: 0.5rem;
   overflow-x: auto;
   padding: 0.5rem 0;
-  min-height: 80px;
+  min-height: 150px;
   scroll-behavior: smooth;
   width: 100%;
   max-width: 100%;
@@ -726,7 +726,7 @@ kbd {
 
 .carousel-thumbnail {
   flex: 0 0 auto;
-  height: 64px;
+  height: 128px;
   aspect-ratio: 16 / 9;
   background: #000;
   border: 2px solid transparent;
