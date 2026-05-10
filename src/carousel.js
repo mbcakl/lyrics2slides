@@ -73,6 +73,14 @@ export function initCarousel() {
   const container = document.getElementById('slide-carousel');
   if (!container) return;
 
+  // Horizontal scroll with mouse wheel
+  container.addEventListener('wheel', (e) => {
+    if (e.deltaY !== 0) {
+      e.preventDefault();
+      container.scrollLeft += e.deltaY;
+    }
+  }, { passive: false });
+
   // Render on state change
   subscribe((currentState) => {
     updateCarousel(container, currentState, (index) => {
