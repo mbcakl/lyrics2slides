@@ -411,7 +411,7 @@ export async function initBible() {
   }
 
   function selectMatch(match) {
-    state.bibleSelectedBook = match.code;
+    setBibleSelectedBook(match.code);
     smartInput.value = `${getFormattedBookName(match.code, match)} `;
     autocompleteDropdown.style.display = 'none';
     highlightedIndex = -1;
@@ -494,7 +494,7 @@ export async function initBible() {
        const possibleBooks = matchBook(cleanQuery);
        if (possibleBooks.length > 0) {
          bookCode = possibleBooks[0].code;
-         state.bibleSelectedBook = bookCode;
+         setBibleSelectedBook(bookCode);
        } else {
          // explicit visual feedback for book not found
          showInputError(smartInput);
