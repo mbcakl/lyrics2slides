@@ -47,13 +47,28 @@ function isFontAvailableCanvas(fontFamily) {
 }
 
 /**
- * Get list of unavailable fonts from settings.
+ * Return the [primary, secondary] font families in use for the given mode.
  *
  * @param {Object} settings - Font settings object
+ * @param {string} mode - 'bible' or 'lyrics'
+ * @returns {string[]} [primaryFamily, secondaryFamily]
+ */
+export function getActiveFontFamilies(settings, mode = 'lyrics') {
+  if (mode === 'bible') {
+    return [settings.bibleFontFamilyPrimary, settings.bibleFontFamilySecondary];
+  }
+  return [settings.fontFamilyPrimary, settings.fontFamilySecondary];
+}
+
+/**
+ * Get list of unavailable fonts from settings for the active mode.
+ *
+ * @param {Object} settings - Font settings object
+ * @param {string} mode - 'bible' or 'lyrics'
  * @returns {Promise<string[]>} List of unavailable font names
  */
-export async function getUnavailableFonts(settings) {
-  const fonts = [settings.fontFamilyPrimary, settings.fontFamilySecondary];
+export async function getUnavailableFonts(settings, mode = 'lyrics') {
+  const fonts = getActiveFontFamilies(settings, mode);
   const unavailable = [];
 
   for (const font of fonts) {

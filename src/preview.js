@@ -1,5 +1,5 @@
 import { state, subscribe } from './state.js';
-import { getUnavailableFonts } from './fonts.js';
+import { getUnavailableFonts, getActiveFontFamilies } from './fonts.js';
 import { renderSlide } from './renderer.js';
 
 // DOM elements
@@ -36,12 +36,13 @@ export function initPreview() {
   renderPreview(state);
 }
 
-async function checkFonts(settings) {
-  const fontKey = `${settings.fontFamilyPrimary}|${settings.fontFamilySecondary}`;
+async function checkFonts(settings, mode) {
+  const [primary, secondary] = getActiveFontFamilies(settings, mode);
+  const fontKey = `${mode}|${primary}|${secondary}`;
   if (fontKey === lastCheckedFonts) return;
   lastCheckedFonts = fontKey;
 
-  const unavailable = await getUnavailableFonts(settings);
+  const unavailable = await getUnavailableFonts(settings, mode);
   if (unavailable.length > 0) {
     fontWarning.textContent = `Font not found: ${unavailable.join(', ')}. Preview may not match export.`;
     fontWarning.style.display = 'block';
@@ -54,7 +55,7 @@ function renderPreview(state) {
   const { slides, currentSlide, settings, mode } = state;
 
   // Check fonts asynchronously
-  checkFonts(settings);
+  checkFonts(settings, mode);
 
   const isBible = mode === 'bible';
 

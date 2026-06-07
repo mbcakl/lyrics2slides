@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { isFontAvailable, getUnavailableFonts } from './fonts.js';
+import { isFontAvailable, getUnavailableFonts, getActiveFontFamilies } from './fonts.js';
 
 describe('font utilities', () => {
   describe('isFontAvailable', () => {
@@ -38,6 +38,27 @@ describe('font utilities', () => {
       };
       const result = await getUnavailableFonts(settings);
       expect(Array.isArray(result)).toBe(true);
+    });
+  });
+
+  describe('getActiveFontFamilies', () => {
+    const settings = {
+      fontFamilyPrimary: 'LyricsPrimary',
+      fontFamilySecondary: 'LyricsSecondary',
+      bibleFontFamilyPrimary: 'BiblePrimary',
+      bibleFontFamilySecondary: 'BibleSecondary'
+    };
+
+    it('returns lyrics fonts in lyrics mode', () => {
+      expect(getActiveFontFamilies(settings, 'lyrics')).toEqual(['LyricsPrimary', 'LyricsSecondary']);
+    });
+
+    it('returns bible fonts in bible mode', () => {
+      expect(getActiveFontFamilies(settings, 'bible')).toEqual(['BiblePrimary', 'BibleSecondary']);
+    });
+
+    it('defaults to lyrics fonts when mode is omitted', () => {
+      expect(getActiveFontFamilies(settings)).toEqual(['LyricsPrimary', 'LyricsSecondary']);
     });
   });
 });
