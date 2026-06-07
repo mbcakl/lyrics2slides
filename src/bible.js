@@ -182,7 +182,6 @@ export async function initBible() {
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     const buffer = await response.arrayBuffer();
     db = new SQL.Database(new Uint8Array(buffer));
-    console.log('Bible database loaded successfully');
   } catch (err) {
     console.error('Failed to load Bible database:', err);
   }
@@ -637,8 +636,6 @@ export function parseReference(bookCode, cvStr) {
 }
 
 function fetchVerses(ref, version) {
-  console.log('Fetching verses:', ref, version);
-  
   let sql = 'SELECT text, verse, chapter FROM verses WHERE book = :book AND version = :version';
   const params = { ':book': ref.book, ':version': version };
 
@@ -661,6 +658,5 @@ function fetchVerses(ref, version) {
     verses.push(stmt.getAsObject());
   }
   stmt.free();
-  console.log(`Found ${verses.length} verses`);
   return verses;
 }
