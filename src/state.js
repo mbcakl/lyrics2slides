@@ -150,7 +150,7 @@ export function addSavedVerse(verse) {
     v.sEnabled === verse.sEnabled
   );
   if (!exists) {
-    state.savedVerses.push(verse);
+    state.savedVerses = [...state.savedVerses, verse];
     localStorage.setItem(VERSES_KEY, JSON.stringify(state.savedVerses));
     notify();
   }

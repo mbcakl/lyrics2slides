@@ -82,6 +82,14 @@ describe('state module', () => {
       expect(mockSetItem).not.toHaveBeenCalled();
     });
 
+    it('addSavedVerse produces a new array reference', () => {
+      stateModule.state.savedVerses = [];
+      const before = stateModule.state.savedVerses;
+      stateModule.addSavedVerse({ id: 1, book: 'GEN', reference: '1:1', pVersion: 'NIV', sVersion: 'NIV', sEnabled: false });
+      expect(stateModule.state.savedVerses).not.toBe(before);
+      expect(stateModule.state.savedVerses).toHaveLength(1);
+    });
+
     it('removeSavedVerse removes a verse, persists and notifies', () => {
       const verse = { id: 1, book: 'GEN', reference: '1:1' };
       stateModule.state.savedVerses = [verse];
