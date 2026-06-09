@@ -698,8 +698,14 @@ kbd {
   color: white;
 }
 
-/* Autocomplete Hover */
-#bible-autocomplete-dropdown .autocomplete-item:hover {
+/* Autocomplete items */
+#bible-autocomplete-dropdown .autocomplete-item {
+  padding: 0.5rem;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border-color);
+}
+#bible-autocomplete-dropdown .autocomplete-item:hover,
+#bible-autocomplete-dropdown .autocomplete-item.highlighted {
   background: var(--bg-hover, #333) !important;
 }
 
