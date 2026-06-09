@@ -757,3 +757,12 @@ kbd {
   transform-origin: top left;
   /* The scaling will be applied dynamically via JS based on height */
 }
+
+.bible-error {
+  background: #5a1a1a;
+  color: #ffdddd;
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  margin-bottom: 0.75rem;
+  font-size: 0.85rem;
+}
