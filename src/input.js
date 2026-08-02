@@ -1,5 +1,16 @@
-import { state, setSlides, setPrimaryLyrics, setSecondaryLyrics, updateSettings } from './state.js';
+import {
+  state, setSlides, setPrimaryLyrics, setSecondaryLyrics, updateSettings,
+  addSavedLyrics, removeSavedLyrics, subscribe
+} from './state.js';
 import { parseLyrics } from './parser.js';
+import { syncControlsWithState } from './controls.js';
+import { deriveTitle, renderSavedLyrics } from './lyrics/view.js';
+
+// Font settings a saved song carries with it, so loading one restores its look.
+const SONG_SETTING_KEYS = [
+  'fontFamilyPrimary', 'fontSizePrimary', 'fontBoldPrimary', 'fontColorPrimary',
+  'fontFamilySecondary', 'fontSizeSecondary', 'fontBoldSecondary', 'fontColorSecondary'
+];
 
 let primaryTextarea;
 let secondaryTextarea;
@@ -20,10 +31,18 @@ function setSecondaryEnabled(enabled) {
   }
 }
 
+function pickSongSettings(settings) {
+  const picked = {};
+  SONG_SETTING_KEYS.forEach(key => { picked[key] = settings[key]; });
+  return picked;
+}
+
 export function initInput() {
   primaryTextarea = document.getElementById('primary-lyrics');
   secondaryTextarea = document.getElementById('secondary-lyrics');
   secondaryGroup = document.getElementById('secondary-group');
+  const saveBtn = document.getElementById('save-lyrics-btn');
+  const savedLyricsGrid = document.getElementById('saved-lyrics-grid');
 
   // Debounce timer
   let debounceTimer;
@@ -38,6 +57,7 @@ export function initInput() {
       // Enable/disable secondary based on primary content
       const hasPrimary = primaryTextarea.value.trim().length > 0;
       setSecondaryEnabled(hasPrimary);
+      saveBtn.disabled = !deriveTitle(primaryTextarea.value);
 
       // When secondary is first used, set both font sizes to 40
       const hasSecondary = secondaryTextarea.value.trim().length > 0;
@@ -54,9 +74,64 @@ export function initInput() {
     }, 150);
   }
 
+  function saveCurrentSong() {
+    const title = deriveTitle(primaryTextarea.value);
+    if (!title) return;
+    addSavedLyrics({
+      id: Date.now(),
+      title,
+      primary: primaryTextarea.value,
+      secondary: secondaryTextarea.value,
+      settings: pickSongSettings(state.settings)
+    });
+  }
+
+  function loadSavedSong(song) {
+    // A pending debounce would otherwise overwrite the loaded text with the
+    // pre-load textarea contents.
+    clearTimeout(debounceTimer);
+
+    primaryTextarea.value = song.primary;
+    setPrimaryLyrics(song.primary);
+
+    // Order matters: disabling secondary clears its textarea, so toggle first.
+    const hasPrimary = song.primary.trim().length > 0;
+    setSecondaryEnabled(hasPrimary);
+    const secondary = song.secondary || '';
+    secondaryTextarea.value = secondary;
+    setSecondaryLyrics(secondary);
+
+    // The saved sizes are what the user chose for this song; don't let the
+    // first-secondary-use 40/40 adjustment fire on top of them.
+    secondaryHasBeenUsed = secondary.trim().length > 0;
+
+    if (song.settings) {
+      updateSettings(pickSongSettings({ ...state.settings, ...song.settings }));
+      syncControlsWithState();
+    }
+
+    saveBtn.disabled = !deriveTitle(song.primary);
+    setSlides(parseLyrics(song.primary, secondary));
+  }
+
   primaryTextarea.addEventListener('input', handleInput);
   secondaryTextarea.addEventListener('input', handleInput);
+  saveBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    saveCurrentSong();
+  });
 
-  // Initial state - secondary disabled
+  // Re-render the grid only when the saved-songs array identity changes.
+  let lastSavedLyrics = state.savedLyrics;
+  subscribe((newState) => {
+    if (newState.savedLyrics !== lastSavedLyrics) {
+      lastSavedLyrics = newState.savedLyrics;
+      renderSavedLyrics(savedLyricsGrid, newState.savedLyrics, { onLoad: loadSavedSong, onDelete: removeSavedLyrics });
+    }
+  });
+
+  // Initial state - secondary disabled, nothing to save yet
   setSecondaryEnabled(false);
+  saveBtn.disabled = true;
+  renderSavedLyrics(savedLyricsGrid, state.savedLyrics, { onLoad: loadSavedSong, onDelete: removeSavedLyrics });
 }

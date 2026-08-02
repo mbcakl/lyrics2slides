@@ -104,6 +104,99 @@ describe('state module', () => {
     });
   });
 
+  describe('savedLyrics', () => {
+    const song = (over = {}) => ({
+      id: 1,
+      title: 'Amazing grace',
+      primary: 'Amazing grace\nhow sweet the sound',
+      secondary: '',
+      settings: { fontSizePrimary: 64 },
+      ...over
+    });
+
+    it('initializes from localStorage if available', async () => {
+      const saved = [song()];
+      mockGetItem.mockImplementation((key) =>
+        key === 'lyrics2slides_saved_lyrics' ? JSON.stringify(saved) : null
+      );
+
+      vi.resetModules();
+      stateModule = await import('./state.js');
+
+      expect(stateModule.state.savedLyrics).toEqual(saved);
+      expect(mockGetItem).toHaveBeenCalledWith('lyrics2slides_saved_lyrics');
+    });
+
+    it('initializes with empty array if localStorage is empty', () => {
+      expect(stateModule.state.savedLyrics).toEqual([]);
+    });
+
+    it('addSavedLyrics adds a song, persists and notifies', () => {
+      const listener = vi.fn();
+      stateModule.subscribe(listener);
+
+      stateModule.addSavedLyrics(song());
+
+      expect(stateModule.state.savedLyrics).toContainEqual(song());
+      expect(mockSetItem).toHaveBeenCalledWith('lyrics2slides_saved_lyrics', JSON.stringify([song()]));
+      expect(listener).toHaveBeenCalled();
+    });
+
+    it('addSavedLyrics produces a new array reference', () => {
+      const before = stateModule.state.savedLyrics;
+      stateModule.addSavedLyrics(song());
+      expect(stateModule.state.savedLyrics).not.toBe(before);
+    });
+
+    it('addSavedLyrics replaces a same-title song in place, keeping its id', () => {
+      stateModule.addSavedLyrics(song({ id: 1, title: 'One' }));
+      stateModule.addSavedLyrics(song({ id: 2, title: 'Two' }));
+
+      stateModule.addSavedLyrics(song({ id: 99, title: 'One', primary: 'edited' }));
+
+      expect(stateModule.state.savedLyrics).toHaveLength(2);
+      expect(stateModule.state.savedLyrics[0]).toMatchObject({ id: 1, title: 'One', primary: 'edited' });
+      expect(stateModule.state.savedLyrics[1]).toMatchObject({ id: 2, title: 'Two' });
+    });
+
+    it('addSavedLyrics trims the title and ignores a blank one', () => {
+      stateModule.addSavedLyrics(song({ title: '  Padded  ' }));
+      expect(stateModule.state.savedLyrics[0].title).toBe('Padded');
+
+      mockSetItem.mockClear();
+      stateModule.addSavedLyrics(song({ id: 2, title: '   ' }));
+
+      expect(stateModule.state.savedLyrics).toHaveLength(1);
+      expect(mockSetItem).not.toHaveBeenCalled();
+    });
+
+    it('removeSavedLyrics removes a song, persists and notifies', () => {
+      stateModule.state.savedLyrics = [song()];
+      const listener = vi.fn();
+      stateModule.subscribe(listener);
+
+      stateModule.removeSavedLyrics(1);
+
+      expect(stateModule.state.savedLyrics).toEqual([]);
+      expect(mockSetItem).toHaveBeenCalledWith('lyrics2slides_saved_lyrics', JSON.stringify([]));
+      expect(listener).toHaveBeenCalled();
+    });
+
+    it('handles corrupted saved lyrics JSON gracefully', async () => {
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      mockGetItem.mockImplementation((key) =>
+        key === 'lyrics2slides_saved_lyrics' ? 'invalid json' : null
+      );
+
+      vi.resetModules();
+      stateModule = await import('./state.js');
+
+      expect(stateModule.state.savedLyrics).toEqual([]);
+      expect(consoleSpy).toHaveBeenCalled();
+      consoleSpy.mockRestore();
+    });
+  });
+
   describe('setPrimaryLyrics', () => {
     it('updates primary lyrics and notifies', () => {
       const listener = vi.fn();

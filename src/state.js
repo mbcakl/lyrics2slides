@@ -1,5 +1,6 @@
 // Application state
 const VERSES_KEY = 'lyrics2slides_saved_verses';
+const LYRICS_KEY = 'lyrics2slides_saved_lyrics';
 const SETTINGS_KEY = 'lyrics2slides_settings';
 const MODE_KEY = 'lyrics2slides_mode';
 
@@ -10,6 +11,16 @@ if (storedVerses) {
     initialSavedVerses = JSON.parse(storedVerses);
   } catch (e) {
     console.error('Failed to parse saved verses', e);
+  }
+}
+
+let initialSavedLyrics = [];
+const storedLyrics = localStorage.getItem(LYRICS_KEY);
+if (storedLyrics) {
+  try {
+    initialSavedLyrics = JSON.parse(storedLyrics);
+  } catch (e) {
+    console.error('Failed to parse saved lyrics', e);
   }
 }
 
@@ -58,6 +69,7 @@ export const state = {
   biblePrimaryReference: '',
   bibleSecondaryReference: '',
   savedVerses: initialSavedVerses,
+  savedLyrics: initialSavedLyrics,
   slides: [],
   currentSlide: 0,
   settings: initialSettings
@@ -159,6 +171,32 @@ export function addSavedVerse(verse) {
 export function removeSavedVerse(id) {
   state.savedVerses = state.savedVerses.filter(v => v.id !== id);
   localStorage.setItem(VERSES_KEY, JSON.stringify(state.savedVerses));
+  notify();
+}
+
+export function addSavedLyrics(song) {
+  // song: { id, title, primary, secondary, settings }
+  // Unlike verses (a re-fetchable pointer), a song carries its own text, so the
+  // title is its identity: re-saving under the same title updates in place.
+  const title = song.title.trim();
+  if (!title) return;
+
+  const entry = { ...song, title };
+  const index = state.savedLyrics.findIndex(s => s.title === title);
+  if (index === -1) {
+    state.savedLyrics = [...state.savedLyrics, entry];
+  } else {
+    state.savedLyrics = state.savedLyrics.map((s, i) =>
+      i === index ? { ...entry, id: s.id } : s
+    );
+  }
+  localStorage.setItem(LYRICS_KEY, JSON.stringify(state.savedLyrics));
+  notify();
+}
+
+export function removeSavedLyrics(id) {
+  state.savedLyrics = state.savedLyrics.filter(s => s.id !== id);
+  localStorage.setItem(LYRICS_KEY, JSON.stringify(state.savedLyrics));
   notify();
 }
 
