@@ -110,10 +110,15 @@ export function parseSmartInput(input) {
   return { bookQuery: '', reference: val };
 }
 
+// Chinese IMEs emit the full-width colon, and dashes arrive in several widths
+// from copy-paste; all of them mean the ASCII separator here.
+const REFERENCE_PUNCTUATION = { '\uFF1A': ':', '\uFF0D': '-', '\u2013': '-', '\u2014': '-' };
+
 export function parseReference(bookCode, cvStr) {
   if (!cvStr || !cvStr.trim()) return null;
+  const normalized = cvStr.trim().replace(/[\uFF1A\uFF0D\u2013\u2014]/g, c => REFERENCE_PUNCTUATION[c]);
   const regex = /^(\d+)(?::(\d+)(?:-(\d+))?)?$/;
-  const match = cvStr.trim().match(regex);
+  const match = normalized.match(regex);
   if (!match) return null;
   const chapter = parseInt(match[1]);
   const startVerse = match[2] ? parseInt(match[2]) : null;

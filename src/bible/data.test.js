@@ -57,6 +57,22 @@ describe('parseReference', () => {
     expect(parseReference('GEN', 'abc')).toBeNull();
     expect(parseReference('GEN', '1:abc')).toBeNull();
   });
+  it('accepts the full-width colon', () => {
+    expect(parseReference('GEN', '1\uFF1A1')).toEqual({ book: 'GEN', chapter: 1, startVerse: 1, endVerse: 1 });
+  });
+  it('accepts full-width and en/em dashes in a range', () => {
+    const expected = { book: 'GEN', chapter: 1, startVerse: 1, endVerse: 5 };
+    expect(parseReference('GEN', '1:1\uFF0D5')).toEqual(expected);
+    expect(parseReference('GEN', '1:1\u20135')).toEqual(expected);
+    expect(parseReference('GEN', '1:1\u20145')).toEqual(expected);
+  });
+  it('accepts full-width colon and dash together', () => {
+    expect(parseReference('GEN', '1\uFF1A1\uFF0D5')).toEqual({ book: 'GEN', chapter: 1, startVerse: 1, endVerse: 5 });
+  });
+  it('still rejects separators that are not a colon or dash', () => {
+    expect(parseReference('GEN', '1\uFF0C1')).toBeNull();
+    expect(parseReference('GEN', '1 : 1')).toBeNull();
+  });
 });
 
 describe('formatBookName', () => {
