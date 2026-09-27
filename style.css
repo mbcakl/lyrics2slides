@@ -821,7 +821,6 @@ select.text-input option {
   position: relative;
   aspect-ratio: 16 / 9;
   max-height: 100%;
-  overflow: hidden;
   box-shadow: var(--slide-shadow);
 }
 
