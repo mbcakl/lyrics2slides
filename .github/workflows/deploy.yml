@@ -5,6 +5,12 @@ on:
   push:
     branches:
       - main
+  # Manual "Run workflow" button, e.g. to redeploy after the glass branch changes
+  workflow_dispatch:
+
+env:
+  # Branch served side by side at /<repo>/glass/. Skipped if the branch is gone.
+  GLASS_BRANCH: claude/eager-shannon-ljqia8
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
@@ -37,6 +43,33 @@ jobs:
         run: npm run build
         env:
           BASE_URL: /${{ github.event.repository.name }}/
+
+      - name: Check for glass branch
+        id: glass
+        run: |
+          if git ls-remote --exit-code --heads origin "$GLASS_BRANCH" > /dev/null; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Branch $GLASS_BRANCH not found; deploying main only."
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout glass branch
+        if: steps.glass.outputs.exists == 'true'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.GLASS_BRANCH }}
+          path: glass-src
+
+      - name: Build glass branch into dist/glass
+        if: steps.glass.outputs.exists == 'true'
+        working-directory: glass-src
+        run: |
+          npm ci
+          npm run build
+          cp -r dist ../dist/glass
+        env:
+          BASE_URL: /${{ github.event.repository.name }}/glass/
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
