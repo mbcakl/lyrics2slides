@@ -6,22 +6,48 @@
 }
 
 :root {
+  color-scheme: dark;
   --bg-primary: #1a1a2e;
   --bg-secondary: #16213e;
   --text-primary: #eee;
   --text-secondary: #aaa;
   --accent: #4a90d9;
+  --accent-contrast: #fff;
   --border: #333;
   --surface: #1e1e3a;
   --border-color: #333;
   --bg-hover: #2a2a4a;
+  --font-ui: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-display: var(--font-ui);
+  --font-label: var(--font-ui);
+  --radius-sm: 4px;
+  --radius: 6px;
+  --radius-lg: 8px;
+  --shadow-popover: 0 4px 12px rgba(0,0,0,0.2);
+  --shadow-dialog: 0 10px 25px rgba(0,0,0,0.5);
+  --shadow-preview: none;
+  --ot-color: #4a90d9;
+  --nt-color: #4ade80;
+  --danger: #ef4444;
+  --danger-contrast: #fff;
+  --warning-bg: #f59e0b;
+  --warning-text: #1a1a2e;
+  --error-bg: #5a1a1a;
+  --error-text: #ffdddd;
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--font-ui);
   background: var(--bg-primary);
   color: var(--text-primary);
   min-height: 100vh;
+}
+
+/* Form controls don't inherit the page font by default; the textareas keep theirs */
+button,
+input,
+select {
+  font-family: inherit;
 }
 
 /* App Layout */
@@ -42,8 +68,25 @@ body {
 }
 
 .logo {
+  font-family: var(--font-display);
   font-size: 1.5rem;
   font-weight: 600;
+}
+
+.theme-select {
+  padding: 0.4rem 0.6rem;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.theme-select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
 }
 
 .header-controls {
@@ -61,7 +104,7 @@ body {
   width: 40px;
   height: 32px;
   border: none;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
 }
 
@@ -75,7 +118,7 @@ body {
   list-style: none;
   cursor: pointer;
   padding: 0.5rem;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
 }
 
 .header-help summary::-webkit-details-marker {
@@ -89,19 +132,19 @@ body {
   margin-top: 0.5rem;
   background: var(--surface);
   border: 1px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   padding: 1rem;
   width: 250px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  box-shadow: var(--shadow-popover);
   z-index: 100;
 }
 
 .btn-primary {
   padding: 0.75rem 1.5rem;
   background: var(--accent);
-  color: white;
+  color: var(--accent-contrast);
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius);
   font-size: 1rem;
   cursor: pointer;
   transition: opacity 0.2s;
@@ -116,7 +159,7 @@ body {
   background: transparent;
   color: var(--text-primary);
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius);
   font-size: 1rem;
   cursor: pointer;
   transition: background 0.2s;
@@ -174,7 +217,7 @@ body {
   padding: 1rem;
   background: var(--bg-secondary);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   color: var(--text-primary);
   font-size: 1rem;
   line-height: 1.6;
@@ -199,14 +242,14 @@ body {
   gap: 0.5rem;
   padding: 0.5rem;
   background: var(--bg-secondary);
-  border-radius: 6px;
+  border-radius: var(--radius);
 }
 
 .font-settings input[type="text"] {
   padding: 0.4rem 0.6rem;
   background: var(--bg-primary);
   border: 1px solid var(--border);
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   color: var(--text-primary);
   width: 180px;
   font-size: 0.875rem;
@@ -216,7 +259,7 @@ body {
   padding: 0.4rem;
   background: var(--bg-primary);
   border: 1px solid var(--border);
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   color: var(--text-primary);
   width: 60px;
   text-align: center;
@@ -232,7 +275,7 @@ body {
   width: 32px;
   height: 28px;
   border: none;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
 }
 
@@ -243,7 +286,7 @@ body {
   padding: 0.3rem 0.5rem;
   background: var(--bg-primary);
   border: 1px solid var(--border);
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   font-weight: bold;
   font-size: 0.875rem;
@@ -253,7 +296,7 @@ body {
 
 .bold-label:has(input:checked) {
   background: var(--accent);
-  color: white;
+  color: var(--accent-contrast);
   border-color: var(--accent);
 }
 
@@ -277,10 +320,11 @@ body {
 .slide-preview {
   flex: 1;
   background: #000;
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   position: relative;
   aspect-ratio: 16 / 9;
   max-height: 100%;
+  box-shadow: var(--shadow-preview);
 }
 
 .slide-content {
@@ -379,10 +423,10 @@ body {
 
 /* Font Warning */
 .font-warning {
-  background: #f59e0b;
-  color: #1a1a2e;
+  background: var(--warning-bg);
+  color: var(--warning-text);
   padding: 0.5rem 1rem;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   font-size: 0.875rem;
   margin-bottom: 0.5rem;
 }
@@ -547,18 +591,18 @@ kbd {
   border: 1px solid var(--border);
   color: var(--text-primary);
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
 }
 .tab-btn.active {
   background: var(--accent);
-  color: white;
+  color: var(--accent-contrast);
   border-color: var(--accent);
 }
 .text-input {
   width: 100%;
   padding: 0.75rem;
   border: 1px solid var(--border);
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   background-color: var(--bg-secondary);
   color: var(--text-primary);
 }
@@ -566,13 +610,13 @@ kbd {
 /* Bible Picker Dialog */
 .picker-dialog {
   border: none;
-  border-radius: 12px;
+  border-radius: calc(var(--radius-lg) + 4px);
   padding: 1.5rem;
   background: var(--bg-primary);
   color: var(--text-primary);
   max-width: 900px;
   width: 90%;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+  box-shadow: var(--shadow-dialog);
 }
 
 .picker-dialog::backdrop {
@@ -619,7 +663,7 @@ kbd {
   padding: 0.5rem;
   background: var(--bg-secondary);
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius);
   color: var(--text-primary);
   cursor: pointer;
   transition: all 0.2s;
@@ -633,16 +677,16 @@ kbd {
 .book-btn.active {
   background: var(--accent);
   border-color: var(--accent);
-  color: white;
+  color: var(--accent-contrast);
 }
 
 .book-btn .zh { font-weight: bold; }
 .book-btn .en { font-size: 0.7rem; color: var(--text-secondary); }
-.book-btn.active .en { color: rgba(255,255,255,0.8); }
+.book-btn.active .en { color: var(--accent-contrast); opacity: 0.8; }
 
 /* Section Specific Colors */
-#ot-grid .book-btn:not(.active) { border-left: 3px solid #4a90d9; }
-#nt-grid .book-btn:not(.active) { border-left: 3px solid #4ade80; }
+#ot-grid .book-btn:not(.active) { border-left: 3px solid var(--ot-color); }
+#nt-grid .book-btn:not(.active) { border-left: 3px solid var(--nt-color); }
 
 /* Saved Verses Grid */
 .saved-verses-grid,
@@ -673,7 +717,7 @@ kbd {
   position: relative;
   background: var(--bg-secondary);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   padding: 0.75rem;
   cursor: pointer;
   transition: all 0.2s;
@@ -709,7 +753,7 @@ kbd {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--bg-hover);
   color: var(--text-secondary);
   border: none;
   display: flex;
@@ -721,8 +765,8 @@ kbd {
 }
 
 .delete-card-btn:hover {
-  background: #ef4444;
-  color: white;
+  background: var(--danger);
+  color: var(--danger-contrast);
 }
 
 /* Autocomplete items */
@@ -763,7 +807,7 @@ kbd {
   aspect-ratio: 16 / 9;
   background: #000;
   border: 2px solid transparent;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   position: relative;
   overflow: hidden;
@@ -786,10 +830,204 @@ kbd {
 }
 
 .bible-error {
-  background: #5a1a1a;
-  color: #ffdddd;
+  background: var(--error-bg);
+  color: var(--error-text);
   padding: 0.5rem 0.75rem;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   margin-bottom: 0.75rem;
   font-size: 0.85rem;
+}
+
+/* ------------------------------------------------------------------
+   Themes (app chrome only — slide colours come from user settings).
+   Midnight is the :root default above; see src/theme.js.
+   ------------------------------------------------------------------ */
+
+/* Sanctuary: warm charcoal, parchment text, antique gold */
+:root[data-theme="sanctuary"] {
+  color-scheme: dark;
+  --bg-primary: #1b1714;
+  --bg-secondary: #221d19;
+  --surface: #2a241f;
+  --text-primary: #f1e9dc;
+  --text-secondary: #a89a86;
+  --accent: #d6a651;
+  --accent-contrast: #1b1714;
+  --border: #3a332b;
+  --border-color: #3a332b;
+  --bg-hover: #2f2923;
+  --font-ui: 'Source Sans 3', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --radius-sm: 8px;
+  --radius: 10px;
+  --radius-lg: 12px;
+  --shadow-preview: 0 0 0 1px #3a332b, 0 18px 40px rgba(0, 0, 0, 0.45);
+  --ot-color: #d6a651;
+  --nt-color: #8fb87a;
+  --error-bg: #4a1f1a;
+  --error-text: #f6d8cf;
+}
+
+[data-theme="sanctuary"] .logo {
+  font-style: italic;
+  font-size: 1.9rem;
+}
+
+[data-theme="sanctuary"] #slide-counter {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.25rem;
+}
+
+/* Hymnal: light ivory paper, ink text, oxblood */
+:root[data-theme="hymnal"] {
+  color-scheme: light;
+  --bg-primary: #f5f1e8;
+  --bg-secondary: #fffdf8;
+  --surface: #ffffff;
+  --text-primary: #231f1a;
+  --text-secondary: #6e6558;
+  --accent: #8a2f2f;
+  --accent-contrast: #ffffff;
+  --border: #ddd4c3;
+  --border-color: #ddd4c3;
+  --bg-hover: #efe8da;
+  --font-ui: 'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-display: 'Fraunces', Georgia, serif;
+  --radius-sm: 4px;
+  --radius: 4px;
+  --radius-lg: 4px;
+  --shadow-popover: 0 4px 16px rgba(35, 31, 26, 0.12);
+  --shadow-dialog: 0 12px 32px rgba(35, 31, 26, 0.2);
+  --shadow-preview: 0 2px 4px rgba(35, 31, 26, 0.12), 0 20px 44px rgba(35, 31, 26, 0.22);
+  --ot-color: #8a2f2f;
+  --nt-color: #2f6b4f;
+  --warning-bg: #f3d58a;
+  --warning-text: #231f1a;
+  --error-bg: #f7e1dc;
+  --error-text: #7a1f1f;
+}
+
+[data-theme="hymnal"] .header {
+  background: var(--bg-secondary);
+}
+
+[data-theme="hymnal"] .picker-dialog::backdrop {
+  background: rgba(35, 31, 26, 0.45);
+}
+
+/* Hymnal tabs read as an underlined index rather than filled buttons */
+[data-theme="hymnal"] .tabs {
+  gap: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+[data-theme="hymnal"] .tab-btn {
+  flex: 0 0 auto;
+  padding: 0.5rem 0.125rem;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  margin-bottom: -1px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+[data-theme="hymnal"] .tab-btn.active {
+  background: transparent;
+  border-bottom-color: var(--accent);
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+[data-theme="hymnal"] .textarea-group label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+[data-theme="hymnal"] .nav-btn {
+  border-radius: var(--radius-sm);
+}
+
+[data-theme="hymnal"] .nav-btn:hover {
+  color: var(--accent-contrast);
+}
+
+/* Stage Monitor: booth black, signal orange, mono labels */
+:root[data-theme="stage"] {
+  color-scheme: dark;
+  --bg-primary: #0c0d10;
+  --bg-secondary: #15171c;
+  --surface: #1c1f26;
+  --text-primary: #e8eaed;
+  --text-secondary: #8b919c;
+  --accent: #ff7a1a;
+  --accent-contrast: #0c0d10;
+  --border: #2a2e37;
+  --border-color: #2a2e37;
+  --bg-hover: #1c1f26;
+  --font-ui: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-display: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+  --font-label: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+  --radius-sm: 2px;
+  --radius: 2px;
+  --radius-lg: 2px;
+  --shadow-preview: 0 0 0 1px #2a2e37;
+  --ot-color: #ff7a1a;
+  --nt-color: #4fb3d9;
+}
+
+[data-theme="stage"] .logo {
+  font-size: 1.125rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+[data-theme="stage"] .header-controls label,
+[data-theme="stage"] .textarea-group label,
+[data-theme="stage"] .tab-btn,
+[data-theme="stage"] .btn-primary,
+[data-theme="stage"] #present-btn,
+[data-theme="stage"] #slide-counter {
+  font-family: var(--font-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+[data-theme="stage"] .header-controls label,
+[data-theme="stage"] .textarea-group label {
+  font-size: 0.75rem;
+}
+
+[data-theme="stage"] #present-btn {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+[data-theme="stage"] #present-btn:hover {
+  background: var(--accent);
+  color: var(--accent-contrast);
+}
+
+[data-theme="stage"] .tab-btn.active {
+  background: var(--surface);
+  border-color: var(--border);
+  box-shadow: inset 0 -2px 0 var(--accent);
+  color: var(--text-primary);
+}
+
+[data-theme="stage"] #slide-counter {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+[data-theme="stage"] .nav-btn {
+  border-radius: var(--radius-sm);
+}
+
+[data-theme="stage"] .nav-btn:hover {
+  color: var(--accent-contrast);
 }
