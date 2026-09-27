@@ -5,11 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lyrics2Slides</title>
   <script>
-    // Apply the saved theme before first paint to avoid a flash of the default theme
+    // Apply the saved UI theme before first paint (validated again in src/theme.js)
     try {
-      const theme = localStorage.getItem('lyrics2slides_theme');
-      if (theme) document.documentElement.dataset.theme = theme;
-    } catch {}
+      var t = localStorage.getItem('lyrics2slides_theme');
+      if (t === 'classic') t = 'midnight';
+      if (t) document.documentElement.dataset.theme = t;
+    } catch (e) {}
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,14 +21,29 @@
   <div class="app">
     <!-- Header -->
     <header class="header">
-      <h1 class="logo">Lyrics2Slides</h1>
+      <div class="header-left">
+        <h1 class="logo">
+          <span class="logo-mark" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="12" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg>
+          </span>
+          Lyrics2Slides
+        </h1>
+        <div class="tabs" role="tablist" aria-label="Source">
+          <button id="tab-lyrics" class="tab-btn">Lyrics</button>
+          <button id="tab-bible" class="tab-btn active">Bible</button>
+        </div>
+      </div>
       <div class="header-controls">
-        <label for="theme-select">Theme</label>
-        <select id="theme-select" class="theme-select" aria-label="App theme"></select>
-        <label for="bg-color">Background</label>
-        <input type="color" id="bg-color" value="#000000" aria-label="Slide background color">
+        <label class="bg-control" for="bg-color">Background
+          <input type="color" id="bg-color" value="#000000" aria-label="Slide background color">
+        </label>
+        <label class="bg-control theme-control" for="theme-select">Theme
+          <select id="theme-select" class="theme-select"></select>
+        </label>
         <details class="header-help">
-          <summary class="btn-secondary" aria-label="Help">ℹ️</summary>
+          <summary class="btn-icon" aria-label="Help">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 7.5v.5"/></svg>
+          </summary>
           <div class="help-popover">
             <div class="quick-start-title">Quick Start</div>
             <ul class="quick-start-tips">
@@ -37,78 +53,94 @@
             </ul>
           </div>
         </details>
-        <button id="present-btn" class="btn-secondary">Present</button>
-        <button id="download-btn" class="btn-primary">Download PPTX</button>
+        <button id="present-btn" class="btn-secondary">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15l12-7.5z"/></svg>
+          Present
+        </button>
+        <button id="download-btn" class="btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><path d="M7 10l5 5 5-5"/><path d="M5 20h14"/></svg>
+          <span class="btn-label">Download PPTX</span>
+        </button>
       </div>
     </header>
 
     <!-- Main Content -->
     <main class="main">
       <!-- Left: Lyrics Input -->
-      <section class="input-section">
-        <div class="tabs">
-          <button id="tab-lyrics" class="tab-btn">Lyrics</button>
-          <button id="tab-bible" class="tab-btn active">Bible</button>
-        </div>
-
+      <section class="input-section glass">
         <div id="lyrics-container" style="display: none;">
           <div class="saved-lyrics-bar">
-            <button id="save-lyrics-btn" class="btn-secondary" title="Save to Quick Access">💾 Save song</button>
+            <span class="section-label">Saved songs</span>
+            <button id="save-lyrics-btn" class="btn-chip" title="Save to Quick Access">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M6 4h12v16l-6-4-6 4z"/></svg>
+              Save song
+            </button>
           </div>
 
           <div id="saved-lyrics-grid" class="saved-lyrics-grid"></div>
 
           <!-- Primary -->
           <div class="textarea-group">
-            <label for="primary-lyrics">Primary</label>
-            <textarea
-              id="primary-lyrics"
-              placeholder="Paste lyrics here...&#10;&#10;Separate slides with blank lines"
-            ></textarea>
-            <div class="font-settings">
-              <input type="text" id="font-primary" list="font-suggestions" value="Kaiti SC" placeholder="Font name" aria-label="Primary font family">
-              <input type="number" id="size-primary" min="8" max="200" value="64" aria-label="Primary font size">
-              <span class="size-unit">pt</span>
-              <input type="color" id="color-primary" value="#ffff00" aria-label="Primary font color">
-              <label class="bold-label"><input type="checkbox" id="bold-primary" checked aria-label="Primary bold">B</label>
+            <label for="primary-lyrics" class="section-label">Primary</label>
+            <div class="editor-well">
+              <textarea
+                id="primary-lyrics"
+                placeholder="Paste lyrics here...&#10;&#10;Separate slides with blank lines"
+              ></textarea>
+              <div class="font-settings">
+                <input type="text" id="font-primary" list="font-suggestions" value="Kaiti SC" placeholder="Font name" aria-label="Primary font family">
+                <span class="size-field"><input type="number" id="size-primary" min="8" max="200" value="64" aria-label="Primary font size"><span class="size-unit">pt</span></span>
+                <input type="color" id="color-primary" value="#ffff00" aria-label="Primary font color">
+                <label class="bold-label"><input type="checkbox" id="bold-primary" checked aria-label="Primary bold">B</label>
+              </div>
             </div>
           </div>
 
           <!-- Secondary -->
           <div class="textarea-group" id="secondary-group">
-            <label for="secondary-lyrics">Secondary</label>
-            <textarea
-              id="secondary-lyrics"
-              placeholder="Paste lyrics here...&#10;&#10;Separate slides with blank lines"
-            ></textarea>
-            <div class="font-settings" id="secondary-font-group">
-              <input type="text" id="font-secondary" list="font-suggestions" value="Calibri" placeholder="Font name" aria-label="Secondary font family">
-              <input type="number" id="size-secondary" min="8" max="200" value="40" aria-label="Secondary font size">
-              <span class="size-unit">pt</span>
-              <input type="color" id="color-secondary" value="#ffff00" aria-label="Secondary font color">
-              <label class="bold-label"><input type="checkbox" id="bold-secondary" checked aria-label="Secondary bold">B</label>
+            <label for="secondary-lyrics" class="section-label">Secondary</label>
+            <div class="editor-well">
+              <textarea
+                id="secondary-lyrics"
+                placeholder="Paste lyrics here...&#10;&#10;Separate slides with blank lines"
+              ></textarea>
+              <div class="font-settings" id="secondary-font-group">
+                <input type="text" id="font-secondary" list="font-suggestions" value="Calibri" placeholder="Font name" aria-label="Secondary font family">
+                <span class="size-field"><input type="number" id="size-secondary" min="8" max="200" value="40" aria-label="Secondary font size"><span class="size-unit">pt</span></span>
+                <input type="color" id="color-secondary" value="#ffff00" aria-label="Secondary font color">
+                <label class="bold-label"><input type="checkbox" id="bold-secondary" checked aria-label="Secondary bold">B</label>
+              </div>
             </div>
           </div>
         </div>
 
         <div id="bible-container">
-          <div class="textarea-group" style="margin-bottom: 0.75rem;">
-            <label for="bible-smart-input">Search Book & Verse</label>
-            <div style="display: flex; gap: 0.5rem; position: relative;">
-              <input type="text" id="bible-smart-input" placeholder="e.g., csj 3:16, John 1:1" class="text-input" style="flex: 1;" autocomplete="off">
-              <button id="bible-search-btn" class="btn-primary" style="padding: 0.5rem 1rem;" title="Search">🔍</button>
-              <button id="bible-book-picker-btn" class="btn-secondary" style="padding: 0.5rem 1rem;" title="Open Book Picker">🗂️</button>
-              <button id="save-bible-btn" class="btn-secondary" style="padding: 0.5rem 1rem;" title="Save to Quick Access">💾</button>
-              
+          <div class="textarea-group bible-search">
+            <label for="bible-smart-input" class="section-label">Book &amp; Verse</label>
+            <div class="search-row">
+              <div class="search-field">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg>
+                <input type="text" id="bible-smart-input" placeholder="e.g., csj 3:16, John 1:1" autocomplete="off">
+              </div>
+              <button id="bible-search-btn" class="btn-icon btn-icon-accent" title="Search" aria-label="Search">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13"/><path d="M13 6l6 6-6 6"/></svg>
+              </button>
+              <button id="bible-book-picker-btn" class="btn-icon" title="Open Book Picker" aria-label="Open book picker">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="7" height="7" rx="2"/><rect x="13" y="13" width="7" height="7" rx="2"/></svg>
+              </button>
+              <button id="save-bible-btn" class="btn-icon" title="Save to Quick Access" aria-label="Save to quick access">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M6 4h12v16l-6-4-6 4z"/></svg>
+              </button>
+
               <!-- Autocomplete Dropdown -->
-              <div id="bible-autocomplete-dropdown" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 4px; max-height: 200px; overflow-y: auto; z-index: 10; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+              <div id="bible-autocomplete-dropdown" class="autocomplete-dropdown" style="display: none;">
                 <!-- Items will be injected here -->
               </div>
             </div>
           </div>
-          
+
           <div class="control-row">
-            <div class="textarea-group" style="margin-bottom: 0;">
+            <div class="textarea-group">
               <label for="bible-translation-primary">Primary</label>
               <select id="bible-translation-primary" class="text-input">
                 <option value="CUNPSS-神" selected>CUNPSS (The Chinese Union Version)</option>
@@ -117,11 +149,11 @@
               </select>
             </div>
 
-            <div class="textarea-group" style="margin-bottom: 0;">
-              <label style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-secondary);">
+            <div class="textarea-group">
+              <label class="checkbox-label">
                 <input type="checkbox" id="bible-secondary-enable"> Secondary
               </label>
-              <select id="bible-translation-secondary" class="text-input" disabled>
+              <select id="bible-translation-secondary" class="text-input" disabled aria-label="Secondary translation">
                 <option value="NIV">NIV (New International Version)</option>
                 <option value="CUNPSS-神">CUNPSS (The Chinese Union Version)</option>
                 <option value="KJV" selected>KJV (King James Version)</option>
@@ -132,26 +164,28 @@
           <div id="saved-verses-grid" class="saved-verses-grid"></div>
 
           <div class="textarea-group">
-            <label for="bible-primary-text">Primary Verses (Editable)</label>
-            <textarea id="bible-primary-text" placeholder="Fetched verses will appear here..."></textarea>
-            <div class="font-settings" id="bible-primary-font-group">
-              <input type="text" id="bible-font-primary" list="font-suggestions" value="Kaiti SC" placeholder="Font name">
-              <input type="number" id="bible-size-primary" min="8" max="200" value="40">
-              <span class="size-unit">pt</span>
-              <input type="color" id="bible-color-primary" value="#ffff00">
-              <label class="bold-label"><input type="checkbox" id="bible-bold-primary" checked>B</label>
+            <label for="bible-primary-text" class="section-label">Primary Verses (Editable)</label>
+            <div class="editor-well">
+              <textarea id="bible-primary-text" placeholder="Fetched verses will appear here..."></textarea>
+              <div class="font-settings" id="bible-primary-font-group">
+                <input type="text" id="bible-font-primary" list="font-suggestions" value="Kaiti SC" placeholder="Font name" aria-label="Primary font family">
+                <span class="size-field"><input type="number" id="bible-size-primary" min="8" max="200" value="40" aria-label="Primary font size"><span class="size-unit">pt</span></span>
+                <input type="color" id="bible-color-primary" value="#ffff00" aria-label="Primary font color">
+                <label class="bold-label"><input type="checkbox" id="bible-bold-primary" checked aria-label="Primary bold">B</label>
+              </div>
             </div>
           </div>
 
-          <div class="textarea-group" id="bible-secondary-group" style="opacity: 0.4; pointer-events: none; margin-top: 1rem;">
-            <label for="bible-secondary-text">Secondary Verses (Editable)</label>
-            <textarea id="bible-secondary-text" placeholder="Fetched verses will appear here..." disabled></textarea>
-            <div class="font-settings" id="bible-secondary-font-group">
-              <input type="text" id="bible-font-secondary" list="font-suggestions" value="Calibri" placeholder="Font name">
-              <input type="number" id="bible-size-secondary" min="8" max="200" value="40">
-              <span class="size-unit">pt</span>
-              <input type="color" id="bible-color-secondary" value="#ffff00">
-              <label class="bold-label"><input type="checkbox" id="bible-bold-secondary" checked>B</label>
+          <div class="textarea-group bible-secondary-group" id="bible-secondary-group" style="opacity: 0.4; pointer-events: none;">
+            <label for="bible-secondary-text" class="section-label">Secondary Verses (Editable)</label>
+            <div class="editor-well">
+              <textarea id="bible-secondary-text" placeholder="Fetched verses will appear here..." disabled></textarea>
+              <div class="font-settings" id="bible-secondary-font-group">
+                <input type="text" id="bible-font-secondary" list="font-suggestions" value="Calibri" placeholder="Font name" aria-label="Secondary font family">
+                <span class="size-field"><input type="number" id="bible-size-secondary" min="8" max="200" value="40" aria-label="Secondary font size"><span class="size-unit">pt</span></span>
+                <input type="color" id="bible-color-secondary" value="#ffff00" aria-label="Secondary font color">
+                <label class="bold-label"><input type="checkbox" id="bible-bold-secondary" checked aria-label="Secondary bold">B</label>
+              </div>
             </div>
           </div>
         </div>
@@ -166,11 +200,17 @@
           </div>
         </div>
         <div class="slide-nav">
-          <button id="prev-btn" class="nav-btn" aria-label="Previous slide">&lt;</button>
-          <span id="slide-counter" role="status" aria-live="polite">0 / 0</span>
-          <button id="next-btn" class="nav-btn" aria-label="Next slide">&gt;</button>
+          <div class="slide-nav-pill glass">
+            <button id="prev-btn" class="nav-btn" aria-label="Previous slide">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+            </button>
+            <span id="slide-counter" role="status" aria-live="polite">0 / 0</span>
+            <button id="next-btn" class="nav-btn" aria-label="Next slide">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+            </button>
+          </div>
         </div>
-        <div id="slide-carousel" class="slide-carousel"></div>
+        <div id="slide-carousel" class="slide-carousel glass"></div>
       </section>
     </main>
 
@@ -200,8 +240,10 @@
 
   <dialog id="bible-picker-dialog" class="picker-dialog">
     <div class="picker-header">
-      <h3>Select Bible Book</h3>
-      <button id="close-picker-btn" class="close-btn">&times;</button>
+      <h3>Select a book</h3>
+      <button id="close-picker-btn" class="close-btn" aria-label="Close">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12"/><path d="M18 6L6 18"/></svg>
+      </button>
     </div>
     <div class="picker-body">
       <div class="picker-section">

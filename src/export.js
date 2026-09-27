@@ -26,8 +26,9 @@ async function generatePptx() {
   }
 
   // Show loading state
-  const originalText = downloadBtn.textContent;
-  downloadBtn.textContent = 'Generating...';
+  const label = downloadBtn.querySelector('.btn-label') || downloadBtn;
+  const originalText = label.textContent;
+  label.textContent = 'Generating...';
   downloadBtn.disabled = true;
 
   try {
@@ -136,7 +137,7 @@ async function generatePptx() {
     alert('Failed to generate PPTX. Please try again.');
   } finally {
     // Restore button
-    downloadBtn.textContent = originalText;
+    label.textContent = originalText;
     downloadBtn.disabled = false;
   }
 }
