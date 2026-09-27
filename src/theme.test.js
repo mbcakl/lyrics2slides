@@ -17,6 +17,16 @@ describe('theme', () => {
     expect(getStoredTheme()).toBe(DEFAULT_THEME);
   });
 
+  it('maps the legacy classic theme to midnight', () => {
+    localStorage.setItem(THEME_KEY, 'classic');
+    expect(getStoredTheme()).toBe('midnight');
+  });
+
+  it('accepts the liquid glass theme', () => {
+    localStorage.setItem(THEME_KEY, 'glass');
+    expect(getStoredTheme()).toBe('glass');
+  });
+
   it('applyTheme sets the data-theme attribute and persists it', () => {
     applyTheme('hymnal');
     expect(document.documentElement.dataset.theme).toBe('hymnal');

@@ -6,7 +6,11 @@ export const THEMES = [
   { id: 'sanctuary', label: 'Sanctuary' },
   { id: 'hymnal', label: 'Hymnal' },
   { id: 'stage', label: 'Stage Monitor' },
+  { id: 'glass', label: 'Liquid Glass' },
 ];
+
+// Earlier builds stored the Midnight theme as 'classic'
+const LEGACY_THEMES = { classic: 'midnight' };
 
 export const DEFAULT_THEME = 'midnight';
 
@@ -16,7 +20,8 @@ export function isValidTheme(id) {
 
 export function getStoredTheme() {
   try {
-    const stored = localStorage.getItem(THEME_KEY);
+    const raw = localStorage.getItem(THEME_KEY);
+    const stored = LEGACY_THEMES[raw] || raw;
     return isValidTheme(stored) ? stored : DEFAULT_THEME;
   } catch {
     return DEFAULT_THEME;

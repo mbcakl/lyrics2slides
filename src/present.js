@@ -21,8 +21,18 @@ syncChannel.onmessage = (event) => {
   }
 };
 
-// Request initial state from main window
+// Request initial state from main window, retrying until it answers so a
+// missed first reply can't leave the window blank until the next change
 syncChannel.postMessage({ type: 'REQUEST_STATE' });
+let stateRequests = 1;
+const stateRequestTimer = setInterval(() => {
+  if (lastState || stateRequests >= 20) {
+    clearInterval(stateRequestTimer);
+    return;
+  }
+  syncChannel.postMessage({ type: 'REQUEST_STATE' });
+  stateRequests++;
+}, 250);
 
 // Keyboard navigation in presentation window
 document.addEventListener('keydown', (e) => {
@@ -37,7 +47,7 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-window.addEventListener('resize', () => {
-  // Re-render when resized using last known state
-  requestAnimationFrame(render);
-});
+// Re-render whenever the slide box changes size. Font sizes are derived from
+// its height, and the popup can still be settling to its final size when the
+// first state arrives (a window resize event alone can be missed).
+new ResizeObserver(() => render()).observe(slidePreview);
