@@ -44,6 +44,14 @@ describe('updateCarousel', () => {
     expect(container.children[1].classList.contains('active')).toBe(false);
   });
 
+  it('re-renders thumbnails when settings change', () => {
+    updateCarousel(container, mockState, vi.fn());
+    renderer.renderSlide.mockClear();
+    updateCarousel(container, { ...mockState, settings: { backgroundColor: '#fff' } }, vi.fn());
+    expect(renderer.renderSlide).toHaveBeenCalledTimes(2);
+    expect(container.children[0].style.backgroundColor).toBe('rgb(255, 255, 255)');
+  });
+
   it('triggers callback on thumbnail click', () => {
     const callback = vi.fn();
     updateCarousel(container, mockState, callback);

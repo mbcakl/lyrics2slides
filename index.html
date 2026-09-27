@@ -34,9 +34,36 @@
         </div>
       </div>
       <div class="header-controls">
-        <label class="bg-control" for="bg-color">Background
-          <input type="color" id="bg-color" value="#000000" aria-label="Slide background color">
-        </label>
+        <details class="header-help bg-picker" id="bg-picker">
+          <summary class="bg-control" aria-label="Slide background">Background
+            <span id="bg-swatch" class="bg-swatch" aria-hidden="true"></span>
+          </summary>
+          <div class="help-popover bg-popover">
+            <div class="bg-row">
+              <label for="bg-color">Color</label>
+              <input type="color" id="bg-color" value="#000000" aria-label="Slide background color">
+            </div>
+            <div class="bg-row bg-image-row">
+              <span>Image</span>
+              <div class="bg-image-actions">
+                <button type="button" id="bg-image-choose" class="btn-chip">Choose image…</button>
+                <button type="button" id="bg-image-remove" class="btn-chip" hidden>Remove</button>
+              </div>
+              <input type="file" id="bg-image-input" accept="image/jpeg,image/png,image/webp" hidden>
+            </div>
+            <div class="bg-row bg-dim-row" id="bg-dim-row" hidden>
+              <label for="bg-dim">Dim</label>
+              <input type="range" id="bg-dim" min="0" max="80" step="5" value="40">
+              <span id="bg-dim-value" class="bg-dim-value">40%</span>
+            </div>
+            <div id="bg-recent" class="bg-recent" hidden>
+              <div class="bg-recent-label">Recent</div>
+              <div id="bg-recent-grid" class="bg-recent-grid"></div>
+            </div>
+            <p id="bg-error" class="bg-error" role="alert" hidden></p>
+            <p class="bg-hint">Images are cropped to 16:9. You can also drop an image onto the slide.</p>
+          </div>
+        </details>
         <label class="bg-control theme-control" for="theme-select">Theme
           <select id="theme-select" class="theme-select"></select>
         </label>

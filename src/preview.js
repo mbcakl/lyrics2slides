@@ -1,6 +1,7 @@
 import { state, subscribe } from './state.js';
 import { getUnavailableFonts, getActiveFontFamilies } from './fonts.js';
 import { renderSlide } from './renderer.js';
+import { applyBackground } from './background.js';
 
 // DOM elements
 let slidePreview;
@@ -57,10 +58,8 @@ function renderPreview(state) {
   // Check fonts asynchronously
   checkFonts(settings, mode);
 
-  const isBible = mode === 'bible';
-
   // Update background
-  slidePreview.style.backgroundColor = isBible ? settings.bibleBackgroundColor : settings.backgroundColor;
+  applyBackground(slidePreview, settings, mode);
 
   // Render slide content using the shared renderer
   const slide = slides.length > 0 ? slides[currentSlide] : null;

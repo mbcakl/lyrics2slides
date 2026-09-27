@@ -466,5 +466,18 @@ describe('state module', () => {
     it('has default bibleBackgroundColor as #000000', () => {
       expect(stateModule.state.settings.bibleBackgroundColor).toBe('#000000');
     });
+
+    it('has no background image by default', () => {
+      expect(stateModule.state.settings.backgroundImageId).toBeNull();
+      expect(stateModule.state.settings.bibleBackgroundImageId).toBeNull();
+    });
+
+    it('updateSettings replaces the settings object so changes are detectable by identity', () => {
+      const before = stateModule.state.settings;
+      stateModule.updateSettings({ backgroundDim: 0.2 });
+      expect(stateModule.state.settings).not.toBe(before);
+      expect(stateModule.state.settings.backgroundDim).toBe(0.2);
+      expect(before.backgroundDim).toBe(0.4);
+    });
   });
 });

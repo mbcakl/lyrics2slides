@@ -1,4 +1,5 @@
 import { renderSlide } from './renderer.js';
+import { applyBackground } from './background.js';
 import { state, subscribe, setCurrentSlide } from './state.js';
 
 let lastSlides = null;
@@ -9,8 +10,6 @@ export function updateCarousel(container, state, onThumbnailClick) {
   if (!container || !state || !state.slides) return;
   
   const { slides, currentSlide, settings, mode } = state;
-  const isBible = mode === 'bible';
-  const bgColor = isBible ? settings.bibleBackgroundColor : settings.backgroundColor;
 
   // Fast path: only currentSlide changed
   if (slides === lastSlides && settings === lastSettings && mode === lastMode && container.children.length === slides.length) {
@@ -36,7 +35,7 @@ export function updateCarousel(container, state, onThumbnailClick) {
   const thumbnails = slides.map((slide, index) => {
     const thumbnail = document.createElement('div');
     thumbnail.className = `carousel-thumbnail ${index === currentSlide ? 'active' : ''}`;
-    thumbnail.style.backgroundColor = bgColor;
+    applyBackground(thumbnail, settings, mode);
     thumbnail.dataset.index = index;
     
     // Create inner content structure expected by renderSlide

@@ -1,24 +1,8 @@
-import { state, updateSettings, subscribe } from './state.js';
+import { state, updateSettings } from './state.js';
 import { clampFontSize } from './validation.js';
 
 export function initControls() {
-  // Background color
-  const bgColor = document.getElementById('bg-color');
-  bgColor.addEventListener('input', (e) => {
-    if (state.mode === 'bible') {
-      updateSettings({ bibleBackgroundColor: e.target.value });
-    } else {
-      updateSettings({ backgroundColor: e.target.value });
-    }
-  });
-
-  // Keep bg-color input in sync with state
-  subscribe((newState) => {
-    const currentBg = newState.mode === 'bible' ? newState.settings.bibleBackgroundColor : newState.settings.backgroundColor;
-    if (bgColor.value !== currentBg) {
-      bgColor.value = currentBg;
-    }
-  });
+  // Background controls live in backgroundPicker.js
 
   // Primary font settings
   const fontPrimary = document.getElementById('font-primary');
@@ -134,10 +118,6 @@ export function initControls() {
 export function syncControlsWithState() {
   const s = state.settings;
   
-  // Background
-  const bgColor = document.getElementById('bg-color');
-  if (bgColor) bgColor.value = s.backgroundColor;
-  
   // Primary
   document.getElementById('font-primary').value = s.fontFamilyPrimary;
   document.getElementById('size-primary').value = s.fontSizePrimary;
@@ -151,9 +131,6 @@ export function syncControlsWithState() {
   document.getElementById('bold-secondary').checked = s.fontBoldSecondary;
   
   // Bible
-  const bibleBgColor = document.getElementById('bible-bg-color');
-  if (bibleBgColor) bibleBgColor.value = s.bibleBackgroundColor;
-  
   document.getElementById('bible-font-primary').value = s.bibleFontFamilyPrimary;
   document.getElementById('bible-size-primary').value = s.bibleFontSizePrimary;
   document.getElementById('bible-color-primary').value = s.bibleFontColorPrimary;

@@ -1,4 +1,5 @@
 import { renderSlide } from './renderer.js';
+import { applyBackground } from './background.js';
 
 const slidePreview = document.getElementById('slide-preview');
 const syncChannel = new BroadcastChannel('lyrics2slides_sync');
@@ -9,8 +10,7 @@ function render() {
   if (!lastState) return;
   const { slides, currentSlide, settings, mode } = lastState;
   const slide = slides[currentSlide];
-  const isBible = mode === 'bible';
-  slidePreview.style.backgroundColor = isBible ? settings.bibleBackgroundColor : settings.backgroundColor;
+  applyBackground(slidePreview, settings, mode);
   renderSlide(slidePreview, slide, settings, { mode });
 }
 

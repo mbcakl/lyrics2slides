@@ -1,5 +1,8 @@
 import { state } from './state.js';
 import { LAYOUT } from './constants.js';
+import { getBackground, getImageDataUrl } from './background.js';
+
+export const BACKGROUND_MASTER = 'L2S_BACKGROUND';
 
 let downloadBtn;
 let PptxGenJS = null;
@@ -15,6 +18,31 @@ async function loadPptxGenJS() {
     PptxGenJS = module.default;
   }
   return PptxGenJS;
+}
+
+/**
+ * Slide master holding the background, so an image is embedded once rather
+ * than once per slide. The dim overlay sits on the master too, where it
+ * doesn't get in the way when editing slide text in PowerPoint.
+ */
+export function buildBackgroundMaster({ color, dim }, imageDataUrl) {
+  const objects = [];
+  if (imageDataUrl && dim > 0) {
+    objects.push({
+      rect: {
+        x: 0, y: 0, w: '100%', h: '100%',
+        fill: { color: '000000', transparency: Math.round((1 - dim) * 100) },
+        line: { type: 'none' }
+      }
+    });
+  }
+  return {
+    title: BACKGROUND_MASTER,
+    background: imageDataUrl
+      ? { data: imageDataUrl, path: 'background.jpg' }
+      : { color: color.replace('#', '') },
+    objects
+  };
 }
 
 async function generatePptx() {
@@ -41,8 +69,9 @@ async function generatePptx() {
 
     const isBible = mode === 'bible';
 
-    // Remove # from hex color for pptxgenjs
-    const bgColor = (isBible ? settings.bibleBackgroundColor : settings.backgroundColor).replace('#', '');
+    const background = getBackground(settings, mode);
+    const imageDataUrl = background.imageId ? await getImageDataUrl(background.imageId) : null;
+    pptx.defineSlideMaster(buildBackgroundMaster(background, imageDataUrl));
     const alignMode = isBible ? 'left' : 'center';
 
     const primarySettings = isBible ? {
@@ -70,8 +99,7 @@ async function generatePptx() {
     };
 
     for (const slide of slides) {
-      const pptSlide = pptx.addSlide();
-      pptSlide.background = { color: bgColor };
+      const pptSlide = pptx.addSlide({ masterName: BACKGROUND_MASTER });
 
       const hasPrimary = slide.primary.length > 0;
       const hasSecondary = slide.secondary.length > 0;
