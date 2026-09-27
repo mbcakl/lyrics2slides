@@ -8,6 +8,7 @@ A web-based tool for converting lyrics into PowerPoint presentations with suppor
 - **Live preview**: See slides update in real-time as you type
 - **Slide navigation**: Browse slides using keyboard shortcuts or navigation controls
 - **Font customization**: Configure font family, size, and color for each language
+- **Background images**: Use a photo as the slide background, with a dim overlay for readability (stored locally in IndexedDB, cropped to 16:9)
 - **PowerPoint export**: Generate .pptx files with PptxGenJS
 
 ## Getting Started
@@ -60,6 +61,8 @@ lyrics2slides/
 │   ├── navigation.js     # Slide navigation
 │   ├── export.js         # PowerPoint export
 │   ├── fonts.js          # Font handling utilities
+│   ├── background.js     # Background image storage, cropping and rendering
+│   ├── backgroundPicker.js # Background popover UI
 │   └── input.js          # Input handling
 ├── main.js               # Application entry point
 ├── index.html            # HTML template

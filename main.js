@@ -6,6 +6,7 @@ import { initExport } from './src/export.js';
 import { initBible } from './src/bible/index.js';
 import { initCarousel } from './src/carousel.js';
 import { initTheme } from './src/theme.js';
+import { initBackgroundPicker } from './src/backgroundPicker.js';
 
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
@@ -14,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initInput();
   initNavigation();
   initControls();
+  initBackgroundPicker();
   initExport();
   initBible();
   initCarousel();

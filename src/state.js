@@ -26,6 +26,8 @@ if (storedLyrics) {
 
 let initialSettings = {
   backgroundColor: '#000000',
+  backgroundImageId: null,
+  backgroundDim: 0.4,
   fontFamilyPrimary: 'Kaiti SC',
   fontSizePrimary: 64,
   fontBoldPrimary: true,
@@ -36,6 +38,8 @@ let initialSettings = {
   fontColorSecondary: '#ffff00',
   // Bible-specific settings
   bibleBackgroundColor: '#000000',
+  bibleBackgroundImageId: null,
+  bibleBackgroundDim: 0.4,
   bibleFontFamilyPrimary: 'Kaiti SC',
   bibleFontSizePrimary: 40,
   bibleFontBoldPrimary: true,
@@ -201,7 +205,8 @@ export function removeSavedLyrics(id) {
 }
 
 export function updateSettings(updates) {
-  Object.assign(state.settings, updates);
+  // Replace rather than mutate, so subscribers can detect changes by identity
+  state.settings = { ...state.settings, ...updates };
   localStorage.setItem(SETTINGS_KEY, JSON.stringify(state.settings));
   notify();
 }
