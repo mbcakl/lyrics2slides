@@ -5,9 +5,11 @@ import { initControls } from './src/controls.js';
 import { initExport } from './src/export.js';
 import { initBible } from './src/bible/index.js';
 import { initCarousel } from './src/carousel.js';
+import { initTheme } from './src/theme.js';
 
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
   initPreview();
   initInput();
   initNavigation();
