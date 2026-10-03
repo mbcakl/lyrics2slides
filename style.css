@@ -1313,11 +1313,6 @@ select.text-input option,
   justify-content: center;
 }
 
-.slide-preview.empty::after {
-  content: 'Enter lyrics to preview slides';
-  color: var(--text-secondary);
-}
-
 /* Font Warning */
 .font-warning {
   background: var(--warning-bg);
