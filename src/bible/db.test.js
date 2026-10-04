@@ -31,6 +31,17 @@ describe('fetchVerses', () => {
     expect(stmt.free).toHaveBeenCalled();
   });
 
+  it('omits the upper bound for an open-ended range', () => {
+    const { db, prepare, stmt } = makeFakeDb([]);
+    fetchVerses(db, { book: 'JHN', chapter: 3, startVerse: 16, endVerse: null }, 'NIV');
+    const sql = prepare.mock.calls[0][0];
+    expect(sql).toContain('AND verse >= :start');
+    expect(sql).not.toContain(':end');
+    expect(stmt.bind).toHaveBeenCalledWith({
+      ':book': 'JHN', ':version': 'NIV', ':chapter': 3, ':start': 16
+    });
+  });
+
   it('omits chapter/verse clauses when only the book is given', () => {
     const { db, prepare, stmt } = makeFakeDb([]);
     fetchVerses(db, { book: 'GEN' }, 'NIV');

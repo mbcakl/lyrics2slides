@@ -53,9 +53,18 @@ describe('parseReference', () => {
   it('handles chapter and verse range', () => {
     expect(parseReference('GEN', '1:1-5')).toEqual({ book: 'GEN', chapter: 1, startVerse: 1, endVerse: 5 });
   });
+  it('treats a trailing dash as open-ended (to end of chapter)', () => {
+    const expected = { book: 'GEN', chapter: 1, startVerse: 16, endVerse: null };
+    expect(parseReference('GEN', '1:16-')).toEqual(expected);
+    expect(parseReference('GEN', '1:16\u2013')).toEqual(expected);
+    expect(parseReference('GEN', '1\uFF1A16\uFF0D')).toEqual(expected);
+  });
   it('returns null for invalid format', () => {
     expect(parseReference('GEN', 'abc')).toBeNull();
     expect(parseReference('GEN', '1:abc')).toBeNull();
+    expect(parseReference('GEN', '1:')).toBeNull();
+    expect(parseReference('GEN', '1-')).toBeNull();
+    expect(parseReference('GEN', '1:16 -')).toBeNull();
   });
   it('accepts the full-width colon', () => {
     expect(parseReference('GEN', '1\uFF1A1')).toEqual({ book: 'GEN', chapter: 1, startVerse: 1, endVerse: 1 });

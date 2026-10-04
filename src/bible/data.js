@@ -117,12 +117,16 @@ const REFERENCE_PUNCTUATION = { '\uFF1A': ':', '\uFF0D': '-', '\u2013': '-', '\u
 export function parseReference(bookCode, cvStr) {
   if (!cvStr || !cvStr.trim()) return null;
   const normalized = cvStr.trim().replace(/[\uFF1A\uFF0D\u2013\u2014]/g, c => REFERENCE_PUNCTUATION[c]);
-  const regex = /^(\d+)(?::(\d+)(?:-(\d+))?)?$/;
+  // A trailing dash with no end verse ("3:16-") is open-ended: endVerse null
+  // means "to the end of the chapter".
+  const regex = /^(\d+)(?::(\d+)(?:(-)(\d+)?)?)?$/;
   const match = normalized.match(regex);
   if (!match) return null;
   const chapter = parseInt(match[1]);
   const startVerse = match[2] ? parseInt(match[2]) : null;
-  const endVerse = match[3] ? parseInt(match[3]) : startVerse;
+  let endVerse = startVerse;
+  if (match[4]) endVerse = parseInt(match[4]);
+  else if (match[3]) endVerse = null;
   return { book: bookCode, chapter, startVerse, endVerse };
 }
 

@@ -90,17 +90,19 @@ export async function initBible() {
     const ref = parseReference(bookCode, cvStr);
     if (!ref) { showInputError(smartInput); return; }
 
+    const pVersion = primaryTrans.value;
+    const pVerses = fetchVerses(db, ref, pVersion);
+
     const bookNames = BOOK_NAMES_MAP[ref.book];
     let range = '';
     if (ref.chapter) {
       range = ` ${ref.chapter}`;
       if (ref.startVerse) {
-        range += `:${ref.startVerse}${ref.endVerse !== ref.startVerse ? '-' + ref.endVerse : ''}`;
+        // Open-ended ("3:16-"): label with the last verse actually fetched.
+        const endVerse = ref.endVerse ?? (pVerses.length ? pVerses[pVerses.length - 1].verse : ref.startVerse);
+        range += `:${ref.startVerse}${endVerse !== ref.startVerse ? '-' + endVerse : ''}`;
       }
     }
-
-    const pVersion = primaryTrans.value;
-    const pVerses = fetchVerses(db, ref, pVersion);
     let sVerses = [];
     let sVersion = '';
     if (secEnable.checked) {
