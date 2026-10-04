@@ -16,9 +16,12 @@ export function fetchVerses(db, ref, version) {
     params[':chapter'] = ref.chapter;
   }
   if (ref.startVerse) {
-    sql += ' AND verse >= :start AND verse <= :end';
+    sql += ' AND verse >= :start';
     params[':start'] = ref.startVerse;
-    params[':end'] = ref.endVerse;
+    if (ref.endVerse != null) {
+      sql += ' AND verse <= :end';
+      params[':end'] = ref.endVerse;
+    }
   }
   sql += ' ORDER BY chapter ASC, verse ASC';
 
